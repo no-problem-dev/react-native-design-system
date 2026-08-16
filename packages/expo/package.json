@@ -34,6 +34,7 @@
     "@expo/vector-icons": "*",
     "expo-glass-effect": "*",
     "expo-router": "*",
+    "expo-system-ui": "*",
     "react": ">=18",
     "react-native": ">=0.74"
   },
@@ -44,6 +45,7 @@
     "expo": "^57.0.7",
     "expo-glass-effect": "^57.0.1",
     "expo-router": "^57.0.7",
+    "expo-system-ui": "^57.0.2",
     "react": "^19.2.0",
     "react-native": "^0.86.0",
     "react-native-builder-bob": "^0.43.0",

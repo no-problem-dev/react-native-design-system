@@ -5,6 +5,7 @@
  * system itself imports none of this — install the adapter and surfaces become
  * glass where glass exists; leave it out and they stay fills that work anywhere.
  */
+export { useWindowBackground } from './windowBackground'
 export { DesignSystemProvider } from './DesignSystemProvider.js'
 export type { DesignSystemProviderProps } from './DesignSystemProvider.js'
 

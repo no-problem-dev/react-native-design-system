@@ -1,5 +1,5 @@
 import type { Appearance, BrandColors, ColorSource, MaterialAdapter } from '@no-problem/design-system'
-import { MaterialProvider, ThemeProvider, brandColors } from '@no-problem/design-system'
+import { MaterialProvider, ThemeProvider, brandColors, createTheme } from '@no-problem/design-system'
 import type { ReactNode } from 'react'
 import { useMemo } from 'react'
 import { useColorScheme } from 'react-native'
@@ -9,6 +9,7 @@ import { useColorScheme } from 'react-native'
 // `platform.ios` / `platform.android` / `platform` as candidates when it is asked
 // for a module rather than for a named file.
 import { bindings } from './platform'
+import { useWindowBackground } from './windowBackground'
 
 export type DesignSystemProviderProps = {
   children: ReactNode
@@ -46,6 +47,16 @@ export function DesignSystemProvider({
     () => ({ capabilities, GlassSurface: bindings.GlassSurface }),
     [capabilities],
   )
+
+  // The same theme the provider is about to hand down. Resolving it twice is
+  // cheap and keeps the window from being told a colour the app is not using.
+  const theme = createTheme({
+    appearance: resolved,
+    colorSource,
+    ...(colorSource === 'brand' ? null : { dynamicColors }),
+    ...(brand === undefined ? null : { brand }),
+  })
+  useWindowBackground(theme.colors.background)
 
   return (
     <ThemeProvider

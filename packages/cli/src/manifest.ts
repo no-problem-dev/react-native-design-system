@@ -99,6 +99,7 @@ export const manifest: Record<string, Item> = {
       { origin: 'expo', from: 'platform.tsx', to: 'adapter/platform.tsx' },
       { origin: 'expo', from: 'platform.ios.tsx', to: 'adapter/platform.ios.tsx' },
       { origin: 'expo', from: 'platform.android.tsx', to: 'adapter/platform.android.tsx' },
+      { origin: 'expo', from: 'windowBackground.ts', to: 'adapter/windowBackground.ts' },
       { origin: 'expo', from: 'DesignSystemProvider.tsx', to: 'adapter/DesignSystemProvider.tsx' },
     ],
   },
