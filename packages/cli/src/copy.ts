@@ -20,7 +20,11 @@ export function prepare(names: string[], version = versionOfDesignSystem()): Pre
   const files = items.flatMap((item: Item) =>
     item.files.map((spec) => ({
       path: spec.to,
-      content: header + rewriteImports(readSource(spec), spec.to),
+      // JSON carries no imports and no comments — writing a header into it would
+      // make it invalid.
+      content: spec.to.endsWith('.json')
+        ? readSource(spec)
+        : header + rewriteImports(readSource(spec), spec.to),
     })),
   )
 
@@ -38,7 +42,7 @@ function exportable(items: Item[]): string[] {
  * that works until the day a bundler evaluates the modules in the other order.
  */
 function isExportable(path: string): boolean {
-  if (path.endsWith('index.ts')) return false
+  if (path.endsWith('index.ts') || path.endsWith('.json')) return false
   return !path.startsWith('adapter/') && !path.startsWith('navigation/')
 }
 

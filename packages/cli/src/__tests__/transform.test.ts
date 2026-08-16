@@ -110,8 +110,17 @@ describe('what actually gets produced', () => {
     }
   })
 
-  it('marks every file with where it came from', () => {
-    for (const file of files) expect(file.content, file.path).toContain('@no-problem/design-system@1.2.3')
+  it('marks every file with where it came from, except the ones that cannot carry a note', () => {
+    for (const file of files) {
+      if (file.path.endsWith('.json')) continue // a comment would make it invalid
+      expect(file.content, file.path).toContain('@no-problem/design-system@1.2.3')
+    }
+  })
+
+  it('leaves data files exactly as they are', () => {
+    const data = files.filter((file) => file.path.endsWith('.json'))
+    expect(data.length).toBeGreaterThan(0)
+    for (const file of data) expect(() => JSON.parse(file.content)).not.toThrow()
   })
 
   it('writes each path once', () => {

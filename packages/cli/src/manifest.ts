@@ -26,6 +26,9 @@ export type Item = {
 }
 
 const tokenFiles: FileSpec[] = [
+  // The values as data, so a build tool that is not TypeScript can read the same
+  // file rather than keep its own copy.
+  { origin: 'tokens', from: 'generated/tokens.json', to: 'tokens/tokens.json' },
   { origin: 'tokens', from: 'generated/tokens.ts', to: 'tokens/tokens.ts' },
   { origin: 'tokens', from: 'types.ts', to: 'tokens/types.ts' },
   { origin: 'tokens', from: 'index.ts', to: 'tokens/index.ts' },

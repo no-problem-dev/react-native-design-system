@@ -55,19 +55,41 @@ function tsLiteral(value, indent = 0) {
   return JSON.stringify(value)
 }
 
+/**
+ * The values, as data.
+ *
+ * JSON rather than a module, because the same file has to be read by things that
+ * are not TypeScript — a Tailwind config is plain Node, and a token that exists
+ * only as a `.ts` export forces every such tool to keep a second copy.
+ */
 StyleDictionary.registerFormat({
-  name: 'np/ts-tokens',
+  name: 'np/json-tokens',
   format({ dictionary }) {
     const all = deepMap(plain(dictionary.tokens), unpx)
     const { color, space, radiusStep, spacing, radius, iconSize, scheme, control } = all
+    return `${JSON.stringify(
+      { primitive: { color, space, radiusStep }, spacing, radius, iconSize, scheme, control },
+      null,
+      2,
+    )}\n`
+  },
+})
+
+StyleDictionary.registerFormat({
+  name: 'np/ts-tokens',
+  format() {
     return [
       HEADER,
-      `export const primitive = ${tsLiteral({ color, space, radiusStep })} as const\n`,
-      `export const spacing = ${tsLiteral(spacing)} as const\n`,
-      `export const radius = ${tsLiteral(radius)} as const\n`,
-      `export const iconSize = ${tsLiteral(iconSize)} as const\n`,
-      `export const scheme = ${tsLiteral(scheme)} as const\n`,
-      `export const control = ${tsLiteral(control)} as const\n`,
+      `import data from './tokens.json' with { type: 'json' }\n`,
+      '// One artifact, read two ways: this module for TypeScript, the JSON for',
+      '// everything that is not.',
+      `export const primitive = data.primitive`,
+      `export const spacing = data.spacing`,
+      `export const radius = data.radius`,
+      `export const iconSize = data.iconSize`,
+      `export const scheme = data.scheme`,
+      `export const control = data.control`,
+      '',
     ].join('\n')
   },
 })
@@ -128,6 +150,7 @@ const sd = new StyleDictionary({
       transformGroup: 'js',
       buildPath: 'src/generated/',
       files: [
+        { destination: 'tokens.json', format: 'np/json-tokens' },
         { destination: 'tokens.ts', format: 'np/ts-tokens' },
         { destination: 'tailwind-preset.ts', format: 'np/tailwind-preset' },
       ],
