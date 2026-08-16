@@ -171,3 +171,23 @@ describe('adding to a copy that already exists', () => {
     rmSync(directory, { recursive: true, force: true })
   })
 })
+
+describe('what the entry point must not close a loop with', () => {
+  it('never re-exports a file from the platform package', () => {
+    // Those files reach the core through the design system's own name, which the
+    // copy rewrites to this very entry point. Exporting them back closes a cycle,
+    // and a cycle is read as an uninitialised binding long after the warning.
+    const index = prepare(['expo-adapter', 'navigation', 'segmented']).find(
+      (file) => file.path === 'index.ts',
+    )!.content
+    for (const line of index.split('\n').filter((l) => l.startsWith('export'))) {
+      expect(line, line).not.toMatch(/adapter\/|navigation\/|Segmented\/Segmented'/)
+    }
+  })
+
+  it('still re-exports the shared parts of the same item', () => {
+    const index = prepare(['segmented']).find((file) => file.path === 'index.ts')!.content
+    expect(index).toContain("components/Segmented/SegmentedCore")
+    expect(index).toContain("components/Segmented/resolveSegmented")
+  })
+})

@@ -1,7 +1,7 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 
-import type { Item } from './manifest.js'
+import type { FileSpec, Item } from './manifest.js'
 import { readSource, versionOfDesignSystem } from './sources.js'
 import { provenance, resolveItems, rewriteImports } from './transform.js'
 
@@ -33,23 +33,33 @@ export function prepare(names: string[], version = versionOfDesignSystem()): Pre
 
 /** The paths an entry point should re-export, for a set of items. */
 function exportable(items: Item[]): string[] {
-  return items.flatMap((item) => item.files.map((spec) => spec.to)).filter(isExportable)
+  return items
+    .flatMap((item) => item.files)
+    .filter(isExportable)
+    .map((spec) => spec.to)
 }
 
 /**
- * The adapter and the navigation chrome are left out on purpose. Both import from
- * the entry point, and exporting them back would close a loop between them — one
- * that works until the day a bundler evaluates the modules in the other order.
+ * Everything from the platform package is left out on purpose.
+ *
+ * Those files reach the shared core through the design system's own name, which the
+ * copy rewrites to the entry point. Exporting them back from that entry point closes
+ * a loop — one that works until the day a bundler evaluates the modules in the other
+ * order and something reads a binding that has not been assigned yet. The bundler
+ * warns about the cycle; the failure it warns about arrives much later.
+ *
+ * So a platform-backed component is imported from its own path. That is a small cost
+ * at the call site and the only version of this that cannot break.
  *
  * Anything that is not TypeScript is left out too. The entry point speaks for what
  * the app imports, and a file the build tools read — the token data, the generator a
  * Tailwind config calls — is not part of that graph. Re-exporting one only asks
  * TypeScript for types it was never going to have.
  */
-function isExportable(path: string): boolean {
-  if (path.endsWith('index.ts')) return false
-  if (!/\.tsx?$/.test(path)) return false
-  return !path.startsWith('adapter/') && !path.startsWith('navigation/')
+function isExportable(spec: FileSpec): boolean {
+  if (spec.origin === 'expo') return false
+  if (spec.to.endsWith('index.ts')) return false
+  return /\.tsx?$/.test(spec.to)
 }
 
 /** One entry point, so the copy is usable the moment it lands. */
