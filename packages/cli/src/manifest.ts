@@ -65,6 +65,8 @@ export const manifest: Record<string, Item> = {
     files: [
       { origin: 'core', from: 'material/types.ts', to: 'material/types.ts' },
       { origin: 'core', from: 'material/resolve.ts', to: 'material/resolve.ts' },
+      { origin: 'core', from: 'material/fillStyle.ts', to: 'material/fillStyle.ts' },
+      { origin: 'core', from: 'material/useMaterial.ts', to: 'material/useMaterial.ts' },
       { origin: 'core', from: 'material/MaterialProvider.tsx', to: 'material/MaterialProvider.tsx' },
     ],
   },

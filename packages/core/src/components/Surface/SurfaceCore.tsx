@@ -5,6 +5,7 @@ import type { StyleProp, ViewStyle } from 'react-native'
 import { StyleSheet, View } from 'react-native'
 
 import type { GlassSurfaceProps } from '../../material/MaterialProvider.js'
+import { fillStyle } from '../../material/fillStyle.js'
 import type { ResolvedMaterial } from '../../material/types.js'
 
 export type SurfaceCoreProps = {
@@ -16,25 +17,6 @@ export type SurfaceCoreProps = {
   children?: ReactNode
   /** Supplied by the platform adapter when the resolved material needs one. */
   GlassSurface?: ComponentType<GlassSurfaceProps> | undefined
-}
-
-function fillStyle(material: Extract<ResolvedMaterial, { kind: 'fill' }>): ViewStyle {
-  const { shadow } = material
-  return {
-    backgroundColor: material.backgroundColor,
-    ...(material.borderColor === undefined
-      ? null
-      : { borderWidth: StyleSheet.hairlineWidth, borderColor: material.borderColor }),
-    ...(shadow === undefined
-      ? null
-      : {
-          shadowColor: shadow.color,
-          shadowOpacity: shadow.opacity,
-          shadowRadius: shadow.radius,
-          shadowOffset: { width: 0, height: shadow.offsetY },
-          elevation: shadow.androidElevation,
-        }),
-  }
 }
 
 /**

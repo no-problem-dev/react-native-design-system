@@ -16,7 +16,9 @@ export type { BrandColors } from './theme/createTheme.js'
 // Material
 export { MaterialProvider, useMaterialAdapter } from './material/MaterialProvider.js'
 export type { GlassSurfaceProps, MaterialAdapter } from './material/MaterialProvider.js'
+export { fillStyle } from './material/fillStyle.js'
 export { resolveMaterial } from './material/resolve.js'
+export { useMaterial, useMaterialStyle } from './material/useMaterial.js'
 export { elevationLevel, plainCapabilities } from './material/types.js'
 export type { Elevation, MaterialCapabilities, ResolvedMaterial, ShadowSpec } from './material/types.js'
 
