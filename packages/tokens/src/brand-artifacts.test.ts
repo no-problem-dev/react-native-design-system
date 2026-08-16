@@ -10,7 +10,7 @@ import { createRequire } from 'node:module'
 import { describe, expect, it } from 'vitest'
 
 const require = createRequire(import.meta.url)
-const { rgbChannels, kebab, tailwindArtifacts, typeScriptModule } = require('./brand-artifacts.cjs')
+const { rgbChannels, kebab, tailwindArtifacts } = require('./brand-artifacts.cjs')
 
 const radiusScale = { sm: 4, md: 12, lg: 20 }
 
@@ -85,16 +85,3 @@ describe('what it refuses', () => {
   })
 })
 
-describe('the TypeScript module', () => {
-  const source = typeScriptModule(brand)
-
-  it('writes the values out, rather than importing the JSON back', () => {
-    // Every bundler in this ecosystem resolves a JSON import slightly differently.
-    expect(source).not.toMatch(/import/)
-    expect(source).toContain('"surface": "#FFFFFF"')
-  })
-
-  it('keeps both appearances, so the dark side is reachable from TypeScript too', () => {
-    expect(source).toContain('"surface": "#101010"')
-  })
-})

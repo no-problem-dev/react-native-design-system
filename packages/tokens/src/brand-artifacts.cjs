@@ -1,24 +1,24 @@
 /**
- * Turn a product's own token values into the forms a React Native toolchain reads.
+ * Turn a product's own token values into what a Tailwind config needs.
  *
- * A product decides what its values are. This decides how those values reach each
- * consumer, because the consumers do not agree on a format:
+ * A product decides what its values are. This decides how a class name reaches them.
  *
- *   TypeScript              wants a module, and wants the values typed
- *   Tailwind / NativeWind   is plain Node, and cannot read a TypeScript module
- *   the running app         needs colours that follow the appearance without every
- *                           screen that named one having to re-render
+ * Colours leave here as **CSS variables** rather than as literals in the theme. A
+ * literal is fixed when the stylesheet is built, so a class like `bg-surface` would
+ * keep its light value in the dark; a variable is resolved against
+ * `prefers-color-scheme`, which React Native answers from the OS appearance. So one
+ * class name covers both appearances, and no screen has to name a colour twice.
  *
- * That last consumer is why colours leave here as **CSS variables** rather than as
- * literals in the Tailwind theme. A literal is fixed when the stylesheet is built, so
- * a class like `bg-surface` would keep its light value in the dark; a variable is
- * resolved against `prefers-color-scheme`, which React Native reports from the OS.
  * Anything that does not change with the appearance — radii, font families — stays a
  * literal, because a variable buys nothing there and costs a level of indirection.
  *
- * CommonJS, and `.cjs` rather than `.js`, so that the same file can be read by a
- * Tailwind config, by a build script, and by a test runner without any of them
- * having to agree on a module system first.
+ * TypeScript is deliberately not a consumer here. Code that needs a colour as a value
+ * rather than as a class reads the same token file directly, and adding a generated
+ * module alongside it would be a second copy to keep in step for no gain.
+ *
+ * CommonJS, and `.cjs` rather than `.js`, so the same file can be read by a Tailwind
+ * config, by a build script, and by a test runner without any of them having to agree
+ * on a module system first.
  */
 
 /** @typedef {Record<string, string>} Colors */
@@ -30,9 +30,6 @@
  * @property {{ light: Colors, dark: Colors }} scheme   Overrides of the design system's colour roles.
  * @property {{ light: Colors, dark: Colors }} [product] Colours the design system has no role for.
  */
-
-const HEADER = "// Generated from the brand tokens — do not edit by hand.";
-const CSS_HEADER = "/* Generated from the brand tokens — do not edit by hand. */";
 
 /** A colour that carries its own alpha cannot also take an alpha modifier. */
 const HEX = /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
@@ -138,49 +135,4 @@ function tailwindArtifacts(brand, radiusScale) {
   };
 }
 
-/**
- * The same values as a TypeScript module.
- *
- * Literals, not an import of the JSON: a JSON import is resolved differently by
- * every bundler in this ecosystem — some hand back the object, some wrap it in a
- * `default` — and a module that reads its own values needs no such agreement.
- *
- * @param {Brand} brand
- */
-function typeScriptModule(brand) {
-  const literal = (value) => JSON.stringify(value, null, 2);
-  const decl = (name, value) => `export const ${name} = ${literal(value)} as const;\n`;
-
-  return [
-    HEADER,
-    "",
-    decl("fonts", brand.fonts ?? {}),
-    decl("radiusRoles", brand.radiusRoles ?? {}),
-    decl("scheme", brand.scheme),
-    decl("product", brand.product ?? { light: {}, dark: {} }),
-  ].join("\n");
-}
-
-/**
- * The Tailwind artifacts as a module a config can require.
- *
- * @param {Brand} brand
- * @param {Record<string, number>} radiusScale
- */
-function tailwindModule(brand, radiusScale) {
-  const { theme, base } = tailwindArtifacts(brand, radiusScale);
-  return [
-    CSS_HEADER.replace("/*", "//").replace("*/", "").trimEnd(),
-    "",
-    `module.exports = ${JSON.stringify({ theme, base }, null, 2)};`,
-    "",
-  ].join("\n");
-}
-
-module.exports = {
-  rgbChannels,
-  kebab,
-  tailwindArtifacts,
-  tailwindModule,
-  typeScriptModule,
-};
+module.exports = { rgbChannels, kebab, tailwindArtifacts };
