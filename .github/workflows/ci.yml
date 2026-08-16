@@ -29,6 +29,15 @@ jobs:
       - run: pnpm build
       - run: pnpm typecheck
 
+      # Copying is a supported way to consume this, so it has to keep working: eject
+      # into a real app and typecheck there. A rewritten import that points nowhere
+      # would otherwise only show up in someone else's repository.
+      - name: Copy check
+        run: |
+          node packages/cli/dist/main.js add surface button a11y --dest apps/example/src/_copycheck
+          pnpm --filter example typecheck
+          rm -rf apps/example/src/_copycheck
+
       # The catalog's stories run as tests in a real browser, so the browser has
       # to be there before the test step rather than as part of it.
       - name: Install browser

@@ -1,0 +1,40 @@
+{
+  "name": "@no-problem/design-system-cli",
+  "version": "0.0.0",
+  "description": "Copy the design system into a project that cannot depend on it.",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "design-system": "./dist/main.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@no-problem/design-system": "workspace:*",
+    "@no-problem/design-tokens": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.9.0",
+    "vitest": "^3.2.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

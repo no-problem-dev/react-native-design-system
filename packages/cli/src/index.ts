@@ -1,0 +1,5 @@
+export { drift, prepare, write } from './copy.js'
+export type { Drift, PreparedFile, WriteReport } from './copy.js'
+export { manifest } from './manifest.js'
+export type { FileSpec, Item, Origin } from './manifest.js'
+export { provenance, resolveItems, rewriteImports } from './transform.js'

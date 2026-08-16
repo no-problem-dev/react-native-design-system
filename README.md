@@ -138,6 +138,31 @@ ideas, not platform ones. They keep the values this package ships even in `dynam
 so a device looks like itself while the product still says "this went wrong" in the colour
 it always uses.
 
+## Copying instead of depending
+
+Some projects should not carry a dependency on a package one person controls. A fix
+they need would wait on someone else's review, and that is a poor thing to hand a team
+that has to ship. For those, copy the source in:
+
+```sh
+npx @no-problem/design-system-cli add surface button --dest src/design-system
+```
+
+Whatever an item needs comes with it, imports are rewritten to point at the copied
+files, and the result compiles on its own — no dependency on this package at all.
+Files you have already changed are left alone unless you pass `--force`.
+
+The weakness of copying is that upstream fixes never arrive. That is what `diff` is for:
+
+```sh
+npx @no-problem/design-system-cli diff surface button --dest src/design-system
+```
+
+It reports which files have moved apart, so taking a change or leaving it is a choice
+rather than an oversight. Each copied file carries one line naming the version it came
+from — no paths, no accounts, no links, because the file is going to live in someone
+else's repository.
+
 ## Testing
 
 The catalog under `apps/catalog` is the test suite. Every story runs in a real
