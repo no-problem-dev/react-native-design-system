@@ -22,6 +22,25 @@ export type HeaderOptions = {
    * showing, or `generic` for the platform's own word for going back.
    */
   back?: 'minimal' | 'generic' | 'default' | undefined
+  /**
+   * Put a search field in the bar.
+   *
+   * The platform's own field is not a text input with an icon next to it. It
+   * brings a cancel affordance, dictation, the clear control, the keyboard's
+   * search key, the screen reader's word for "search field", and — on the
+   * platform that does it — the way it tucks away as the reader scrolls and
+   * comes back when they reach for it. Rebuilding that in a `TextInput` produces
+   * something that looks similar and behaves like nothing in particular.
+   */
+  search?:
+    | {
+        placeholder: string
+        onChangeText: (text: string) => void
+        /** Hide the field until the reader scrolls up to it. */
+        hideWhenScrolling?: boolean | undefined
+        autoFocus?: boolean | undefined
+      }
+    | undefined
 }
 
 /**
@@ -60,5 +79,18 @@ export function useHeaderOptions(options: HeaderOptions) {
       : { headerStyle: { backgroundColor: header.backgroundColor } }),
     // Only iOS has this idea, and passing it elsewhere is ignored rather than wrong.
     ...(options.large === true ? { headerLargeTitle: true } : null),
+    ...(options.search === undefined
+      ? null
+      : {
+          headerSearchBarOptions: {
+            placeholder: options.search.placeholder,
+            // The native field reports through an event; callers want the text.
+            onChangeText: (event: { nativeEvent: { text: string } }) =>
+              options.search?.onChangeText(event.nativeEvent.text),
+            hideWhenScrolling: options.search.hideWhenScrolling ?? false,
+            autoCapitalize: 'none' as const,
+            ...(options.search.autoFocus === undefined ? null : { autoFocus: options.search.autoFocus }),
+          },
+        }),
   } as const
 }
