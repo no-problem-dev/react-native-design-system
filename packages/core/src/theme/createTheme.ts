@@ -38,6 +38,33 @@ function controlFor(colors: ColorScheme, base: ControlTokens): ControlTokens {
 }
 
 /**
+ * A container is its role's colour, quieter.
+ *
+ * Shipped as a literal, because a design system has to have one. But the literal is
+ * made from *this package's* primary, and a product that supplies its own primary
+ * and says nothing about the container then gets a selection pill, a chip and a
+ * badge in a hue it does not use — visible on Android, where the tab bar's pill is
+ * drawn from exactly this role.
+ *
+ * So a container the consumer did not name is rebuilt from the colour it belongs to.
+ * One the consumer *did* name is left alone: they meant it.
+ */
+function containersFrom(colors: ColorScheme, named: ReadonlySet<string>): Partial<ColorScheme> {
+  const quiet = (color: string) => `${color.slice(0, 7)}1F`
+  const derived: Record<string, string> = {}
+
+  for (const role of ['primary', 'secondary', 'error'] as const) {
+    const container = `${role}Container`
+    const onContainer = `on${container.charAt(0).toUpperCase()}${container.slice(1)}`
+    if (!named.has(role)) continue
+    if (!named.has(container)) derived[container] = quiet(colors[role])
+    if (!named.has(onContainer)) derived[onContainer] = colors[role]
+  }
+
+  return derived as Partial<ColorScheme>
+}
+
+/**
  * Build a theme.
  *
  * Three things can decide the colours, in order of how specific they are:
@@ -66,7 +93,11 @@ export function createTheme(options: {
 
   const product = typeof brand === 'function' ? brand(appearance) : brand
   const platform = colorSource === 'brand' ? undefined : dynamicColors
-  const colors: ColorScheme = { ...brandColors(appearance), ...platform, ...product }
+  const supplied: ColorScheme = { ...brandColors(appearance), ...platform, ...product }
+
+  // What was actually named, as opposed to what the shipped set already had.
+  const named = new Set([...Object.keys(platform ?? {}), ...Object.keys(product ?? {})])
+  const colors: ColorScheme = { ...supplied, ...containersFrom(supplied, named) }
 
   return {
     appearance,

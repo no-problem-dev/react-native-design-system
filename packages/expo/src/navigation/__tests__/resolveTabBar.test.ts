@@ -52,12 +52,14 @@ describe('dressing the platform tab bar', () => {
   })
 
   it('never invents a colour of its own', () => {
+    // Only the keys that name a colour: the bar also carries a decision or two
+    // that are not colours at all, and those have their own tests.
     const palette = new Set<string>(Object.values(theme.colors))
     for (const platform of ['ios', 'android', 'other'] as const) {
       const bar = resolveTabBar(theme, platform)
       for (const [key, value] of Object.entries(bar)) {
-        if (value === undefined) continue
-        expect(palette.has(value), `${platform}.${key}: ${value}`).toBe(true)
+        if (value === undefined || !/Color$/.test(key)) continue
+        expect(palette.has(value as string), `${platform}.${key}: ${value}`).toBe(true)
       }
     }
   })
@@ -164,5 +166,17 @@ describe('the theme handed to the navigator', () => {
     expect(navigationTheme({ appearance: 'light', colors: scheme.light }, navBase)).toHaveProperty(
       'fonts',
     )
+  })
+})
+
+describe('what the tab bar says about where a reader can go', () => {
+  it('keeps every label on the platform whose guidance asks for them', () => {
+    // Material's own default drops the labels from all but the chosen item once
+    // there are four destinations, which leaves three glyphs to decode.
+    expect(resolveTabBar(theme, 'android').labels).toBe('always')
+  })
+
+  it('says nothing on the platform that does not ask', () => {
+    expect(resolveTabBar(theme, 'ios').labels).toBeUndefined()
   })
 })

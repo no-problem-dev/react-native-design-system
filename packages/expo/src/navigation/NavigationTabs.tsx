@@ -55,6 +55,9 @@ export function NavigationTabs({ tabs, fontFamily, minimize = 'automatic' }: Nav
     <NativeTabs
       tintColor={bar.tintColor}
       {...(bar.backgroundColor === undefined ? null : { backgroundColor: bar.backgroundColor })}
+      {...(bar.labels === undefined
+        ? null
+        : { labelVisibilityMode: bar.labels === 'always' ? ('labeled' as const) : ('selected' as const) })}
       {...(bar.indicatorColor === undefined ? null : { indicatorColor: bar.indicatorColor })}
       {...(bar.rippleColor === undefined ? null : { rippleColor: bar.rippleColor })}
       {...(fontFamily === undefined ? null : { labelStyle: { fontFamily } })}

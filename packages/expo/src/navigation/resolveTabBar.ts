@@ -23,6 +23,12 @@ export type ResolvedTabBar = {
   /** Android's selection pill. Undefined where the platform has no such thing. */
   indicatorColor: string | undefined
   rippleColor: string | undefined
+  /**
+   * Whether every item keeps its label, or only the chosen one.
+   *
+   * Undefined where the platform does not ask.
+   */
+  labels: 'always' | 'selected' | undefined
 }
 
 /**
@@ -47,6 +53,7 @@ export function resolveTabBar(theme: Palette, platform: 'ios' | 'android' | 'oth
       backgroundColor: undefined,
       indicatorColor: undefined,
       rippleColor: undefined,
+      labels: undefined,
     }
   }
 
@@ -56,6 +63,10 @@ export function resolveTabBar(theme: Palette, platform: 'ios' | 'android' | 'oth
       backgroundColor: theme.colors.surface,
       indicatorColor: theme.colors.primaryContainer,
       rippleColor: theme.colors.primaryContainer,
+      // Material asks for labels on every destination. The platform's own default
+      // drops them from all but the chosen one once there are four, which leaves a
+      // reader decoding three glyphs to find out where they can go.
+      labels: 'always',
     }
   }
 
@@ -64,5 +75,6 @@ export function resolveTabBar(theme: Palette, platform: 'ios' | 'android' | 'oth
     backgroundColor: theme.colors.surface,
     indicatorColor: undefined,
     rippleColor: undefined,
+    labels: undefined,
   }
 }
