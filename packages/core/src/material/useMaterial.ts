@@ -1,7 +1,7 @@
 import type { StyleProp, ViewStyle } from 'react-native'
 
 import { useTheme } from '../theme/ThemeProvider.js'
-import { fillStyle } from './fillStyle.js'
+import { fillStyle, shadowStyle } from './fillStyle.js'
 import { useMaterialAdapter } from './MaterialProvider.js'
 import { resolveMaterial } from './resolve.js'
 import type { Elevation, ResolvedMaterial } from './types.js'
@@ -40,4 +40,22 @@ export function useMaterialStyle(elevation: Elevation = 'raised'): StyleProp<Vie
   })
 
   return material.kind === 'fill' ? fillStyle(material) : null
+}
+
+/**
+ * The shadow for a height, and nothing else.
+ *
+ * For a surface whose colour is already decided by something other than its height
+ * — a button carrying its variant's fill, a panel in a product's own dark tone.
+ * Without this, such a caller takes the whole material and then has to undo the
+ * part of it that was wrong, which reads as a mistake even when it is not.
+ */
+export function useShadow(elevation: Elevation = 'raised'): StyleProp<ViewStyle> {
+  const theme = useTheme()
+  const { capabilities } = useMaterialAdapter()
+  const material = resolveMaterial(elevation, theme, {
+    ...capabilities,
+    glass: { available: false, interactive: false },
+  })
+  return material.kind === 'fill' ? shadowStyle(material.shadow) : null
 }

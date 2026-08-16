@@ -89,3 +89,14 @@ export const ShapedByTheProduct: Story = {
     </View>
   ),
 }
+
+/**
+ * A button that floats over content.
+ *
+ * The fill still comes from the variant — a floating button is not a panel, and
+ * taking the whole material would repaint it in the surface colour. Only the
+ * shadow follows the height.
+ */
+export const Floating: Story = {
+  args: { elevation: 'floating', children: 'Compare all' },
+}

@@ -1,7 +1,24 @@
 import type { ViewStyle } from 'react-native'
 import { StyleSheet } from 'react-native'
 
-import type { ResolvedMaterial } from './types.js'
+import type { ResolvedMaterial, ShadowSpec } from './types.js'
+
+/**
+ * The shadow alone.
+ *
+ * For a surface that already knows what colour it is — a button carrying its
+ * variant's fill — but still has to read as being at a height.
+ */
+export function shadowStyle(shadow: ShadowSpec | undefined): ViewStyle | null {
+  if (shadow === undefined) return null
+  return {
+    shadowColor: shadow.color,
+    shadowOpacity: shadow.opacity,
+    shadowRadius: shadow.radius,
+    shadowOffset: { width: 0, height: shadow.offsetY },
+    elevation: shadow.androidElevation,
+  }
+}
 
 /**
  * A fill, as React Native styles it.
@@ -17,14 +34,6 @@ export function fillStyle(material: Extract<ResolvedMaterial, { kind: 'fill' }>)
     ...(material.borderColor === undefined
       ? null
       : { borderWidth: StyleSheet.hairlineWidth, borderColor: material.borderColor }),
-    ...(shadow === undefined
-      ? null
-      : {
-          shadowColor: shadow.color,
-          shadowOpacity: shadow.opacity,
-          shadowRadius: shadow.radius,
-          shadowOffset: { width: 0, height: shadow.offsetY },
-          elevation: shadow.androidElevation,
-        }),
+    ...shadowStyle(shadow),
   }
 }
