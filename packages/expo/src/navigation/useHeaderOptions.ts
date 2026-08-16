@@ -82,6 +82,14 @@ export function useHeaderOptions(options: HeaderOptions) {
       : {
           headerSearchBarOptions: {
             placeholder: options.search.placeholder,
+            // Observed on iOS 26: none of these reach the field. The bar the
+            // system now builds for a search placement is not the one these
+            // properties are written to, so the magnifier stays the light
+            // appearance's dark glyph whatever it is told — including when the
+            // whole app is forced to the dark interface style. They are left in
+            // because two of them are Android's, where the field is the app's to
+            // colour, and because removing them would hide the gap rather than
+            // record it.
             textColor: header.searchTextColor,
             hintTextColor: header.searchHintColor,
             headerIconColor: header.searchHintColor,
