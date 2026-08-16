@@ -7,7 +7,7 @@
  * you installed actually contains.
  */
 
-export type Origin = 'core' | 'tokens'
+export type Origin = 'core' | 'tokens' | 'expo'
 
 export type FileSpec = {
   origin: Origin
@@ -75,6 +75,21 @@ export const manifest: Record<string, Item> = {
     files: [
       { origin: 'core', from: 'components/Surface/SurfaceCore.tsx', to: 'components/Surface/SurfaceCore.tsx' },
       { origin: 'core', from: 'components/Surface/Surface.tsx', to: 'components/Surface/Surface.tsx' },
+    ],
+  },
+
+  'expo-adapter': {
+    name: 'expo-adapter',
+    description: 'Reports what an Expo app’s platform offers, and renders its real materials.',
+    needs: ['material'],
+    files: [
+      { origin: 'expo', from: 'capabilities.ts', to: 'adapter/capabilities.ts' },
+      { origin: 'expo', from: 'materialColorScheme.ts', to: 'adapter/materialColorScheme.ts' },
+      { origin: 'expo', from: 'platform.types.ts', to: 'adapter/platform.types.ts' },
+      { origin: 'expo', from: 'platform.tsx', to: 'adapter/platform.tsx' },
+      { origin: 'expo', from: 'platform.ios.tsx', to: 'adapter/platform.ios.tsx' },
+      { origin: 'expo', from: 'platform.android.tsx', to: 'adapter/platform.android.tsx' },
+      { origin: 'expo', from: 'DesignSystemProvider.tsx', to: 'adapter/DesignSystemProvider.tsx' },
     ],
   },
 

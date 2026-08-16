@@ -43,7 +43,8 @@ export function provenance(version: string): string {
   ].join('\n')
 }
 
-const PACKAGE_IMPORT = /(['"])@no-problem\/design-tokens\1/g
+const TOKENS_IMPORT = /(['"])@no-problem\/design-tokens\1/g
+const CORE_IMPORT = /(['"])@no-problem\/design-system\1/g
 const GENERATED_IMPORT = /(['"])\.\/generated\/tokens\.js\1/g
 
 /**
@@ -58,6 +59,7 @@ export function rewriteImports(source: string, destinationPath: string): string 
   const upwards = depth === 0 ? './' : '../'.repeat(depth)
 
   return source
-    .replace(PACKAGE_IMPORT, `'${upwards}tokens/index.js'`)
+    .replace(TOKENS_IMPORT, `'${upwards}tokens/index.js'`)
+    .replace(CORE_IMPORT, `'${upwards}index.js'`)
     .replace(GENERATED_IMPORT, `'./tokens.js'`)
 }

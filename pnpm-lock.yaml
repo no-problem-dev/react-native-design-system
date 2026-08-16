@@ -118,6 +118,9 @@ importers:
       '@no-problem/design-system':
         specifier: workspace:*
         version: link:../core
+      '@no-problem/design-system-expo':
+        specifier: workspace:*
+        version: link:../expo
       '@no-problem/design-tokens':
         specifier: workspace:*
         version: link:../tokens

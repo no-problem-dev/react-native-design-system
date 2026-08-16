@@ -34,7 +34,7 @@ jobs:
       # would otherwise only show up in someone else's repository.
       - name: Copy check
         run: |
-          node packages/cli/dist/main.js add surface button a11y --dest apps/example/src/_copycheck
+          node packages/cli/dist/main.js add surface button a11y expo-adapter --dest apps/example/src/_copycheck
           pnpm --filter example typecheck
           rm -rf apps/example/src/_copycheck
 

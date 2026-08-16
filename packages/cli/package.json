@@ -27,7 +27,8 @@
   },
   "dependencies": {
     "@no-problem/design-system": "workspace:*",
-    "@no-problem/design-tokens": "workspace:*"
+    "@no-problem/design-tokens": "workspace:*",
+    "@no-problem/design-system-expo": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

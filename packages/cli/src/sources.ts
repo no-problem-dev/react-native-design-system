@@ -9,6 +9,7 @@ const require = createRequire(import.meta.url)
 const packageOf: Record<Origin, string> = {
   core: '@no-problem/design-system',
   tokens: '@no-problem/design-tokens',
+  expo: '@no-problem/design-system-expo',
 }
 
 function rootOf(origin: Origin): string {

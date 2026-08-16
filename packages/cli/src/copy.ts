@@ -27,13 +27,20 @@ export function prepare(names: string[], version = versionOfDesignSystem()): Pre
   return [...files, { path: 'index.ts', content: header + barrel(items) }]
 }
 
-/** One entry point, so the copy is usable the moment it lands. */
+/**
+ * One entry point, so the copy is usable the moment it lands.
+ *
+ * The adapter is left out on purpose. It imports from this file, and putting it
+ * back in here would close a loop between them — a loop that works until the day
+ * a bundler evaluates the modules in the other order.
+ */
 function barrel(items: Item[]): string {
-  const lines = ["// Everything that was copied. Add to it as you copy more.", '']
+  const lines = ['// Everything that was copied. Add to it as you copy more.', '']
 
   for (const item of items) {
     for (const spec of item.files) {
       if (spec.to.endsWith('index.ts')) continue
+      if (spec.to.startsWith('adapter/')) continue
       lines.push(`export * from './${spec.to.replace(/\.tsx?$/, '.js')}'`)
     }
   }
