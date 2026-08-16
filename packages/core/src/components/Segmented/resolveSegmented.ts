@@ -4,6 +4,14 @@ import type { Theme } from '../../theme/types.js'
 export type SegmentedOption<T> = {
   value: T
   label: string
+  /**
+   * Present but not choosable.
+   *
+   * Removing it instead would be worse: the row would change width as data
+   * arrives, and the reader would have no way to tell that a range exists at all
+   * but has nothing behind it yet.
+   */
+  disabled?: boolean | undefined
 }
 
 export type ResolvedSegment = {

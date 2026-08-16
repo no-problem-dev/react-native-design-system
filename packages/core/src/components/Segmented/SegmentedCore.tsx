@@ -47,6 +47,7 @@ export function SegmentedCore<T extends string | number>({
     >
       {options.map((option) => {
         const chosen = option.value === value
+        const off = option.disabled === true
         const segment = chosen ? look.selected : look.unselected
         return (
           <Pressable
@@ -55,8 +56,9 @@ export function SegmentedCore<T extends string | number>({
             // Both spellings on purpose: the older one is what the native
             // platforms read, the newer one is what a browser reads, and this
             // component has to be right in a story as well as on a device.
-            accessibilityState={{ selected: chosen }}
+            accessibilityState={{ selected: chosen, disabled: off }}
             aria-selected={chosen}
+            disabled={off}
             onPress={() => onChange(option.value)}
             style={{
               flex: 1,
@@ -66,6 +68,7 @@ export function SegmentedCore<T extends string | number>({
               paddingHorizontal: theme.spacing.sm,
               borderRadius: look.borderRadius,
               backgroundColor: segment.backgroundColor,
+              opacity: off ? 0.38 : 1,
             }}
           >
             <Text style={{ color: segment.labelColor, fontSize: 13, fontWeight: '600' }}>

@@ -1,7 +1,7 @@
 import type { GlassSurfaceProps, MaterialCapabilities } from '@no-problem/design-system'
 import { resolveSegmented, useTheme } from '@no-problem/design-system'
 import { Host, Picker, Text } from '@expo/ui/swift-ui'
-import { pickerStyle, tag, tint } from '@expo/ui/swift-ui/modifiers'
+import { disabled, pickerStyle, tag, tint } from '@expo/ui/swift-ui/modifiers'
 import { GlassView, isGlassEffectAPIAvailable, isLiquidGlassAvailable } from 'expo-glass-effect'
 import { useEffect, useMemo, useState } from 'react'
 import { AccessibilityInfo } from 'react-native'
@@ -83,7 +83,10 @@ function Segmented({ options, value, onChange, accessibilityLabel, style }: Plat
         {...(accessibilityLabel === undefined ? null : { label: accessibilityLabel })}
       >
         {options.map((option) => (
-          <Text key={String(option.value)} modifiers={[tag(option.value)]}>
+          <Text
+            key={String(option.value)}
+            modifiers={[tag(option.value), ...(option.disabled === true ? [disabled(true)] : [])]}
+          >
             {option.label}
           </Text>
         ))}

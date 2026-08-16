@@ -51,3 +51,35 @@ export const ChoosingOne: Story = {
     )
   },
 }
+
+/**
+ * A range with nothing behind it yet.
+ *
+ * It stays in the row rather than disappearing: a row that changes width as data
+ * arrives moves the other choices out from under the reader's finger, and its
+ * absence would say the range does not exist rather than that it is not ready.
+ */
+export const SomethingNotReady: Story = {
+  render: () => {
+    const [value, setValue] = useState('month')
+    return (
+      <SegmentedCore
+        options={[
+          { value: 'week', label: '1W' },
+          { value: 'month', label: '1M' },
+          { value: 'year', label: '1Y', disabled: true },
+        ]}
+        value={value}
+        onChange={setValue}
+      />
+    )
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await userEvent.click(canvas.getByText('1Y'), { pointerEventsCheck: 0 })
+    await expect(canvas.getByText('1M').closest('[role="tab"]')).toHaveAttribute(
+      'aria-selected',
+      'true',
+    )
+  },
+}

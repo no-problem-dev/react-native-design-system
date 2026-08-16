@@ -56,6 +56,7 @@ function Segmented({ options, value, onChange, style }: PlatformSegmentedProps) 
           <SegmentedButton
             key={String(option.value)}
             selected={option.value === value}
+            enabled={option.disabled !== true}
             onClick={() => onChange(option.value)}
           >
             <Text>{option.label}</Text>
