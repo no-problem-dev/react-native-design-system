@@ -1,11 +1,17 @@
-import { useMaterialColors } from '@expo/ui/jetpack-compose'
+import {
+  Host,
+  SegmentedButton,
+  SingleChoiceSegmentedButtonRow,
+  Text,
+  useMaterialColors,
+} from '@expo/ui/jetpack-compose'
 import type { MaterialCapabilities } from '@no-problem/design-system'
 import type { ColorScheme } from '@no-problem/design-tokens'
 import { useMemo } from 'react'
 
 import { capabilitiesFrom } from './capabilities.js'
 import { fromPlatformPalette } from './materialColorScheme.js'
-import type { PlatformBindings } from './platform.types.js'
+import type { PlatformBindings, PlatformSegmentedProps } from './platform.types.js'
 
 /**
  * No glass material here. Height is carried by tone and shadow instead, which the
@@ -34,4 +40,30 @@ function useDynamicColors(appearance: 'light' | 'dark', fallback: ColorScheme): 
   return useMemo(() => fromPlatformPalette(palette, fallback), [palette, fallback])
 }
 
-export const bindings: PlatformBindings = { useCapabilities, useDynamicColors }
+/**
+ * Material's own segmented buttons.
+ *
+ * Not the same shape as the other platform's — an outlined row where each chosen
+ * segment shows a check — and that is the point. A reader here recognises this one.
+ * The colours are left to Material, which already has them from the same dynamic
+ * palette this file reports upward.
+ */
+function Segmented({ options, value, onChange, style }: PlatformSegmentedProps) {
+  return (
+    <Host matchContents={{ vertical: true }} style={style}>
+      <SingleChoiceSegmentedButtonRow>
+        {options.map((option) => (
+          <SegmentedButton
+            key={String(option.value)}
+            selected={option.value === value}
+            onClick={() => onChange(option.value)}
+          >
+            <Text>{option.label}</Text>
+          </SegmentedButton>
+        ))}
+      </SingleChoiceSegmentedButtonRow>
+    </Host>
+  )
+}
+
+export const bindings: PlatformBindings = { useCapabilities, useDynamicColors, Segmented }

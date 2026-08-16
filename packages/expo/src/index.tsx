@@ -6,6 +6,7 @@
  * glass where glass exists; leave it out and they stay fills that work anywhere.
  */
 export { useWindowBackground } from './windowBackground'
+export { Segmented } from './components/Segmented'
 export { DesignSystemProvider } from './DesignSystemProvider.js'
 export type { DesignSystemProviderProps } from './DesignSystemProvider.js'
 

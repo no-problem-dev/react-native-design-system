@@ -117,6 +117,17 @@ export const manifest: Record<string, Item> = {
     ],
   },
 
+  segmented: {
+    name: 'segmented',
+    description: 'Choosing between views of the same thing, with each platform’s own control.',
+    needs: ['theme'],
+    files: [
+      { origin: 'core', from: 'components/Segmented/resolveSegmented.ts', to: 'components/Segmented/resolveSegmented.ts' },
+      { origin: 'core', from: 'components/Segmented/SegmentedCore.tsx', to: 'components/Segmented/SegmentedCore.tsx' },
+      { origin: 'expo', from: 'components/Segmented.tsx', to: 'components/Segmented/Segmented.tsx' },
+    ],
+  },
+
   button: {
     name: 'button',
     description: 'A button whose colours come from the control layer, so its label stays readable.',

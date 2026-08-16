@@ -1,6 +1,14 @@
-import type { GlassSurfaceProps, MaterialCapabilities } from '@no-problem/design-system'
+import type { GlassSurfaceProps, MaterialCapabilities, SegmentedCoreProps } from '@no-problem/design-system'
 import type { ColorScheme } from '@no-problem/design-tokens'
 import type { ComponentType } from 'react'
+
+/**
+ * The segmented control's props, with the value narrowed to what a native control
+ * can carry. The public component keeps its own type parameter and widens once,
+ * here, rather than making every platform file generic over something none of them
+ * looks at.
+ */
+export type PlatformSegmentedProps = SegmentedCoreProps<string | number>
 
 /**
  * What each platform has to answer.
@@ -20,4 +28,13 @@ export type PlatformBindings = {
   useDynamicColors: (appearance: 'light' | 'dark', fallback: ColorScheme) => ColorScheme | undefined
   /** Present only where a real glass material exists. */
   GlassSurface?: ComponentType<GlassSurfaceProps> | undefined
+  /**
+   * The platform's own segmented control, where it has one.
+   *
+   * Both platforms do, and they look nothing alike — a filled capsule inside a
+   * track on one, an outlined row of buttons on the other. Rebuilding either by
+   * hand produces something that resembles it on that platform and resembles
+   * nothing on the other.
+   */
+  Segmented?: ComponentType<PlatformSegmentedProps> | undefined
 }

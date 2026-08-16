@@ -26,6 +26,10 @@ export type { Elevation, MaterialCapabilities, ResolvedMaterial, ShadowSpec } fr
 export { contrastMinimum, contrastRatio, ensureContrast, luminance, meetsContrast } from './a11y/contrast.js'
 
 // Components
+export { SegmentedCore } from './components/Segmented/SegmentedCore.js'
+export type { SegmentedCoreProps } from './components/Segmented/SegmentedCore.js'
+export { resolveSegmented } from './components/Segmented/resolveSegmented.js'
+export type { ResolvedSegmented, SegmentedOption } from './components/Segmented/resolveSegmented.js'
 export { Surface } from './components/Surface/Surface.js'
 export type { SurfaceProps } from './components/Surface/Surface.js'
 export { SurfaceCore } from './components/Surface/SurfaceCore.js'
