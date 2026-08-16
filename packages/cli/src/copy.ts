@@ -41,6 +41,7 @@ function barrel(items: Item[]): string {
     for (const spec of item.files) {
       if (spec.to.endsWith('index.ts')) continue
       if (spec.to.startsWith('adapter/')) continue
+      if (spec.to.startsWith('navigation/')) continue
       lines.push(`export * from './${spec.to.replace(/\.tsx?$/, '')}'`)
     }
   }

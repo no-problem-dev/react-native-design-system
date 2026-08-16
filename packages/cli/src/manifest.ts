@@ -93,6 +93,17 @@ export const manifest: Record<string, Item> = {
     ],
   },
 
+  'navigation-tabs': {
+    name: 'navigation-tabs',
+    description: 'The platform’s own tab bar, dressed in the product’s colours.',
+    needs: ['theme'],
+    files: [
+      { origin: 'expo', from: 'navigation/icons.ts', to: 'navigation/icons.ts' },
+      { origin: 'expo', from: 'navigation/resolveTabBar.ts', to: 'navigation/resolveTabBar.ts' },
+      { origin: 'expo', from: 'navigation/NavigationTabs.tsx', to: 'navigation/NavigationTabs.tsx' },
+    ],
+  },
+
   button: {
     name: 'button',
     description: 'A button whose colours come from the control layer, so its label stays readable.',

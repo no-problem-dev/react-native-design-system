@@ -15,3 +15,12 @@ export { fromPlatformPalette } from './materialColorScheme.js'
 export type { PlatformPalette } from './materialColorScheme.js'
 
 export type { PlatformBindings } from './platform.types.js'
+
+// Navigation chrome. The platform owns the material; this owns the translation
+// from what a product means to what each platform calls it.
+export { NavigationTabs } from './navigation/NavigationTabs.js'
+export type { NavigationTabsProps, TabDefinition } from './navigation/NavigationTabs.js'
+export { glyphsFor, icons } from './navigation/icons.js'
+export type { IconGlyphs, IconName } from './navigation/icons.js'
+export { resolveTabBar } from './navigation/resolveTabBar.js'
+export type { ResolvedTabBar } from './navigation/resolveTabBar.js'

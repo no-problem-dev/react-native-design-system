@@ -133,6 +133,33 @@ platform.tsx          everywhere else: offers nothing
 Those files *decide*. They do not draw. Anything longer belongs in the shared core, where
 it can be seen in a browser — which is the whole reason the split sits this low.
 
+### The chrome belongs to the platform, not to the app
+
+A tab bar drawn in JavaScript can be made to look like either platform and will
+still be neither. iOS 26 draws a material behind its bar that shrinks as you scroll
+and animates the selection like a drop of water; Android draws a Material 3 bar with
+a selection pill and a ripple. Both handle hit testing, the screen reader and text
+scaling. None of that is styling, and none of it is reachable from a view you drew.
+
+```tsx
+<NavigationTabs
+  tabs={[
+    { name: 'index', label: 'Home', icon: 'home' },
+    { name: 'search', label: 'Search', icon: 'search' },
+  ]}
+/>
+```
+
+`icon` is an idea, not a glyph. The package keeps the table that turns `favorite`
+into `heart.fill` on one platform and `favorite` on the other, typed against both
+real glyph sets so a name that does not exist fails to compile. Colours come from
+the theme, so a product that changed its accent changed its tab bar with it.
+
+The one platform difference that matters is who owns the background: iOS draws its
+own material and painting a colour over it opts the app out; Android expects the app
+to supply the surface. `resolveTabBar` is that decision, as a plain value, tested
+without a device like everything else.
+
 Three colour roles have no platform equivalent: warning, success and info are product
 ideas, not platform ones. They keep the values this package ships even in `dynamic` mode,
 so a device looks like itself while the product still says "this went wrong" in the colour
