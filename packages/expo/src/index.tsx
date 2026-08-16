@@ -5,6 +5,7 @@
  * system itself imports none of this — install the adapter and surfaces become
  * glass where glass exists; leave it out and they stay fills that work anywhere.
  */
+export { navigationTheme } from './navigationTheme'
 export { useWindowBackground } from './windowBackground'
 export { Segmented } from './components/Segmented'
 export { DesignSystemProvider } from './DesignSystemProvider.js'

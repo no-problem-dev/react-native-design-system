@@ -6,8 +6,23 @@ import { describe, expect, it } from 'vitest'
 import { glyphsFor, icons } from '../icons.js'
 import { resolveHeader } from '../resolveHeader.js'
 import { resolveTabBar } from '../resolveTabBar.js'
+import { navigationTheme } from '../../navigationTheme.js'
 
 const theme = { colors: scheme.light }
+
+/** Stands in for whatever the navigator ships. */
+const navBase = {
+  dark: false,
+  colors: {
+    primary: '#000',
+    background: '#fff',
+    card: '#fff',
+    text: '#000',
+    border: '#ccc',
+    notification: '#f00',
+  },
+  fonts: {},
+}
 
 describe('dressing the platform tab bar', () => {
   it('leaves the background alone on the platform that draws its own material', () => {
@@ -130,5 +145,30 @@ describe('the search field inside the header', () => {
       const header = resolveHeader({ colors: scheme[appearance] }, 'ios')
       expect(header.searchHintColor).not.toBe(header.searchTextColor)
     }
+  })
+})
+
+describe('the theme handed to the navigator', () => {
+  it('says which appearance it is, which is what pins the bar’s interface style', () => {
+    // An app that never supplies a theme gets the light one, and the navigation
+    // bar then stays in the light appearance for the life of the process.
+    expect(navigationTheme({ appearance: 'dark', colors: scheme.dark }, navBase).dark).toBe(true)
+    expect(navigationTheme({ appearance: 'light', colors: scheme.light }, navBase).dark).toBe(false)
+  })
+
+  it('paints what the navigator draws between screens in the theme’s own colours', () => {
+    // Left at the default these are the light ones, which shows as a flash of
+    // white behind every push in the dark appearance.
+    const { colors } = navigationTheme({ appearance: 'dark', colors: scheme.dark }, navBase)
+    expect(colors.background).toBe(scheme.dark.background)
+    expect(colors.card).toBe(scheme.dark.surface)
+    expect(colors.text).toBe(scheme.dark.onSurface)
+  })
+
+  it('keeps whatever else the navigator’s own theme carries', () => {
+    // A version that adds to the theme — fonts did exactly this — must keep working.
+    expect(navigationTheme({ appearance: 'light', colors: scheme.light }, navBase)).toHaveProperty(
+      'fonts',
+    )
   })
 })

@@ -1,5 +1,11 @@
 import type { Appearance, BrandColors, ColorSource, MaterialAdapter } from '@no-problem/design-system'
-import { MaterialProvider, ThemeProvider, brandColors, createTheme } from '@no-problem/design-system'
+import {
+  MaterialProvider,
+  ThemeProvider as DesignSystemThemeProvider,
+  brandColors,
+  createTheme,
+} from '@no-problem/design-system'
+import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router'
 import type { ReactNode } from 'react'
 import { useMemo } from 'react'
 import { useColorScheme } from 'react-native'
@@ -9,6 +15,7 @@ import { useColorScheme } from 'react-native'
 // `platform.ios` / `platform.android` / `platform` as candidates when it is asked
 // for a module rather than for a named file.
 import { bindings } from './platform'
+import { navigationTheme } from './navigationTheme'
 import { useWindowBackground } from './windowBackground'
 
 export type DesignSystemProviderProps = {
@@ -59,13 +66,18 @@ export function DesignSystemProvider({
   useWindowBackground(theme.colors.background)
 
   return (
-    <ThemeProvider
-      appearance={resolved}
-      colorSource={colorSource}
-      {...(colorSource === 'brand' ? null : { dynamicColors })}
-      {...(brand === undefined ? null : { brand })}
-    >
-      <MaterialProvider adapter={adapter}>{children}</MaterialProvider>
+    // The navigator's own theme, and the design system's. The first decides what
+    // the platform draws for itself — the navigation bar's interface style above
+    // all — and the second what this package draws.
+    <ThemeProvider value={navigationTheme(theme, resolved === 'dark' ? DarkTheme : DefaultTheme)}>
+      <DesignSystemThemeProvider
+        appearance={resolved}
+        colorSource={colorSource}
+        {...(colorSource === 'brand' ? null : { dynamicColors })}
+        {...(brand === undefined ? null : { brand })}
+      >
+        <MaterialProvider adapter={adapter}>{children}</MaterialProvider>
+      </DesignSystemThemeProvider>
     </ThemeProvider>
   )
 }
