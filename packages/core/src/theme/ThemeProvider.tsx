@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import { createContext, useContext, useMemo } from 'react'
 import { useColorScheme } from 'react-native'
 
+import type { BrandColors } from './createTheme.js'
 import { createTheme } from './createTheme.js'
 import type { Appearance, ColorSource, Theme } from './types.js'
 
@@ -18,8 +19,11 @@ export type ThemeProviderProps = {
    * leave undefined and the theme falls back to the colours shipped here.
    */
   dynamicColors?: ColorScheme | undefined
-  /** This product's own colours. Anything left out keeps the shipped value. */
-  brand?: Partial<ColorScheme> | undefined
+  /**
+   * This product's own colours. Anything left out keeps the shipped value.
+   * A function when the product looks different in the dark.
+   */
+  brand?: BrandColors | undefined
 }
 
 export function ThemeProvider({

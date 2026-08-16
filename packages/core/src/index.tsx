@@ -11,6 +11,7 @@ export { ThemeProvider, useTheme } from './theme/ThemeProvider.js'
 export type { ThemeProviderProps } from './theme/ThemeProvider.js'
 export { brandColors, createTheme } from './theme/createTheme.js'
 export type { Appearance, ColorSource, Theme } from './theme/types.js'
+export type { BrandColors } from './theme/createTheme.js'
 
 // Material
 export { MaterialProvider, useMaterialAdapter } from './material/MaterialProvider.js'

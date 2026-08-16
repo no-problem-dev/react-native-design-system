@@ -4,6 +4,9 @@ import type { ColorScheme, ControlTokens } from '@no-problem/design-tokens'
 import { contrastMinimum, ensureContrast } from '../a11y/contrast.js'
 import type { Appearance, ColorSource, Theme } from './types.js'
 
+/** A product's own colours, either one set or one per appearance. */
+export type BrandColors = Partial<ColorScheme> | ((appearance: Appearance) => Partial<ColorScheme>)
+
 /** The colours this package ships, for one appearance. */
 export function brandColors(appearance: Appearance): ColorScheme {
   return scheme[appearance]
@@ -50,13 +53,20 @@ export function createTheme(options: {
   appearance: Appearance
   colorSource?: ColorSource
   dynamicColors?: ColorScheme | undefined
-  /** This product's own colours. Anything left out keeps the shipped value. */
-  brand?: Partial<ColorScheme> | undefined
+  /**
+   * This product's own colours. Anything left out keeps the shipped value.
+   *
+   * A function when the product looks different in the dark — which it should,
+   * since a palette that reads well on white rarely reads well on black. Passing
+   * one set for both is the shape that quietly produces an unreadable dark mode.
+   */
+  brand?: BrandColors | undefined
 }): Theme {
   const { appearance, colorSource = 'auto', dynamicColors, brand } = options
 
+  const product = typeof brand === 'function' ? brand(appearance) : brand
   const platform = colorSource === 'brand' ? undefined : dynamicColors
-  const colors: ColorScheme = { ...brandColors(appearance), ...platform, ...brand }
+  const colors: ColorScheme = { ...brandColors(appearance), ...platform, ...product }
 
   return {
     appearance,

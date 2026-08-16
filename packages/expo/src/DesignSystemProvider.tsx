@@ -1,4 +1,4 @@
-import type { Appearance, ColorScheme, ColorSource, MaterialAdapter } from '@no-problem/design-system'
+import type { Appearance, BrandColors, ColorSource, MaterialAdapter } from '@no-problem/design-system'
 import { MaterialProvider, ThemeProvider, brandColors } from '@no-problem/design-system'
 import type { ReactNode } from 'react'
 import { useMemo } from 'react'
@@ -15,8 +15,11 @@ export type DesignSystemProviderProps = {
   /** Omit to follow the device. */
   appearance?: Appearance | undefined
   colorSource?: ColorSource | undefined
-  /** This product's own colours. Anything left out keeps the shipped value. */
-  brand?: Partial<ColorScheme> | undefined
+  /**
+   * This product's own colours. Anything left out keeps the shipped value.
+   * A function when the product looks different in the dark.
+   */
+  brand?: BrandColors | undefined
 }
 
 /**
