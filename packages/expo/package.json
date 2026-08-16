@@ -1,0 +1,67 @@
+{
+  "name": "@no-problem/design-system-expo",
+  "version": "0.0.0",
+  "description": "The Expo adapter: reports what the platform offers and renders its real materials.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./lib/module/index.js",
+  "types": "./lib/typescript/index.d.ts",
+  "exports": {
+    ".": {
+      "design-system-source": "./src/index.tsx",
+      "types": "./lib/typescript/index.d.ts",
+      "default": "./lib/module/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "src",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "bob build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@no-problem/design-system": "workspace:*",
+    "@no-problem/design-tokens": "workspace:*"
+  },
+  "peerDependencies": {
+    "@expo/ui": "*",
+    "expo-glass-effect": "*",
+    "react": ">=18",
+    "react-native": ">=0.74"
+  },
+  "devDependencies": {
+    "@expo/ui": "^57.0.7",
+    "@types/react": "^19.0.0",
+    "expo": "^57.0.7",
+    "expo-glass-effect": "^57.0.1",
+    "react": "^19.2.0",
+    "react-native": "^0.86.0",
+    "react-native-builder-bob": "^0.43.0",
+    "typescript": "^5.9.0",
+    "vitest": "^3.2.0"
+  },
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      [
+        "module",
+        {
+          "esm": true
+        }
+      ],
+      [
+        "typescript",
+        {
+          "project": "tsconfig.build.json"
+        }
+      ]
+    ]
+  }
+}

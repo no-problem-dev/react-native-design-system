@@ -101,9 +101,40 @@ can turn the effect off regardless of what the hardware supports.
 
 ### Adapters supply the platform, not the package
 
-This package imports no platform effect. An adapter passes in a `MaterialAdapter` — the
-capabilities it found and a renderer to use — and without one everything degrades to fills.
-That is what lets it install into a project that has none of those libraries.
+The design system imports no platform effect. An adapter passes in a `MaterialAdapter` —
+the capabilities it found and a renderer to use — and without one everything degrades to
+fills. That is what lets it install into a project that has none of those libraries.
+
+`@no-problem/design-system-expo` is that adapter for Expo:
+
+```tsx
+import { DesignSystemProvider } from '@no-problem/design-system-expo'
+
+export default function App() {
+  return (
+    <DesignSystemProvider colorSource="auto">
+      <Surface elevation="floating" padding="lg">…</Surface>
+    </DesignSystemProvider>
+  )
+}
+```
+
+It is also the only place in the repository that splits by platform, and each file is a
+few lines long:
+
+```
+platform.ios.tsx      asks whether glass exists, and renders it
+platform.android.tsx  takes the palette the device derived from its wallpaper
+platform.tsx          everywhere else: offers nothing
+```
+
+Those files *decide*. They do not draw. Anything longer belongs in the shared core, where
+it can be seen in a browser — which is the whole reason the split sits this low.
+
+Three colour roles have no platform equivalent: warning, success and info are product
+ideas, not platform ones. They keep the values this package ships even in `dynamic` mode,
+so a device looks like itself while the product still says "this went wrong" in the colour
+it always uses.
 
 ## Testing
 
