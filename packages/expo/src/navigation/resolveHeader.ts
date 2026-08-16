@@ -17,13 +17,6 @@ export type ResolvedHeader = {
   /** The back control and any action items. */
   tintColor: string
   titleColor: string
-  /**
-   * iOS blurs whatever scrolls beneath the bar. Naming the system material —
-   * rather than a colour — is what keeps the bar looking like part of the OS.
-   */
-  blurEffect: string | undefined
-  /** The bar floats over the content, so the content can be seen through it. */
-  transparent: boolean
 }
 
 /**
@@ -35,12 +28,13 @@ export type ResolvedHeader = {
  */
 export function resolveHeader(theme: Palette, platform: 'ios' | 'android' | 'other'): ResolvedHeader {
   if (platform === 'ios') {
+    // Nothing but colours. The bar's own background is already the system
+    // material — naming a blur, or floating the bar over the content, replaces a
+    // correct default with one every screen then has to handle insets for.
     return {
       backgroundColor: undefined,
       tintColor: theme.colors.primary,
       titleColor: theme.colors.onSurface,
-      blurEffect: 'systemChromeMaterial',
-      transparent: true,
     }
   }
 
@@ -48,7 +42,5 @@ export function resolveHeader(theme: Palette, platform: 'ios' | 'android' | 'oth
     backgroundColor: theme.colors.surface,
     tintColor: theme.colors.onSurface,
     titleColor: theme.colors.onSurface,
-    blurEffect: undefined,
-    transparent: false,
   }
 }

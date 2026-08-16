@@ -71,18 +71,17 @@ describe('the icon vocabulary', () => {
 })
 
 describe('dressing the platform header', () => {
-  it('leaves the background to the platform that draws its own material', () => {
+  it('leaves the bar itself entirely to the platform that draws its own', () => {
+    // Its background is already the system material. Naming a blur or floating it
+    // over the content swaps a correct default for one every screen has to work
+    // around, which is the opposite of adopting the platform.
     const header = resolveHeader(theme, 'ios')
     expect(header.backgroundColor).toBeUndefined()
-    expect(header.blurEffect).toBeDefined()
-    expect(header.transparent).toBe(true)
   })
 
-  it('supplies the surface on the platform that expects it, and asks for no blur', () => {
+  it('supplies the surface on the platform that expects it', () => {
     const header = resolveHeader(theme, 'android')
     expect(header.backgroundColor).toBe(theme.colors.surface)
-    expect(header.blurEffect).toBeUndefined()
-    expect(header.transparent).toBe(false)
   })
 
   it('says nothing about where the title goes or how the back control looks', () => {
@@ -91,10 +90,8 @@ describe('dressing the platform header', () => {
     for (const platform of ['ios', 'android'] as const) {
       expect(Object.keys(resolveHeader(theme, platform)).sort()).toEqual([
         'backgroundColor',
-        'blurEffect',
         'tintColor',
         'titleColor',
-        'transparent',
       ])
     }
   })

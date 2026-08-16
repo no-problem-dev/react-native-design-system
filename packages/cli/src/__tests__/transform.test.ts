@@ -1,6 +1,9 @@
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
-import { prepare } from '../copy.js'
+import { prepare, write } from '../copy.js'
 import { manifest } from '../manifest.js'
 import { provenance, resolveItems, rewriteImports } from '../transform.js'
 
@@ -117,5 +120,36 @@ describe('what actually gets produced', () => {
 
   it('is the same twice, so a diff means a real change', () => {
     expect(prepare(['surface', 'button'], '1.2.3')).toEqual(files)
+  })
+})
+
+describe('adding to a copy that already exists', () => {
+  it('keeps the entry point speaking for everything, not only the newest request', () => {
+    const directory = mkdtempSync(join(tmpdir(), 'design-system-'))
+
+    write(directory, prepare(['surface'], '1.0.0'), false)
+    const afterFirst = readFileSync(join(directory, 'index.ts'), 'utf8')
+    expect(afterFirst).toContain('components/Surface/Surface')
+
+    // A second, unrelated item. The files from the first are still on disk, so an
+    // entry point that forgot them would be wrong about its own directory.
+    write(directory, prepare(['button'], '1.0.0'), false)
+    const afterSecond = readFileSync(join(directory, 'index.ts'), 'utf8')
+
+    expect(afterSecond).toContain('components/Surface/Surface')
+    expect(afterSecond).toContain('components/Button/Button')
+
+    rmSync(directory, { recursive: true, force: true })
+  })
+
+  it('leaves the entry point alone when nothing new was added', () => {
+    const directory = mkdtempSync(join(tmpdir(), 'design-system-'))
+
+    write(directory, prepare(['surface'], '1.0.0'), false)
+    const before = readFileSync(join(directory, 'index.ts'), 'utf8')
+    write(directory, prepare(['surface'], '1.0.0'), false)
+
+    expect(readFileSync(join(directory, 'index.ts'), 'utf8')).toBe(before)
+    rmSync(directory, { recursive: true, force: true })
   })
 })

@@ -16,8 +16,21 @@ export type TabDefinition = {
 
 export type NavigationTabsProps = {
   tabs: readonly TabDefinition[]
-  /** Font family for the labels, when the product has one. */
+  /**
+   * A font for the labels.
+   *
+   * Usually leave this out. The platform's tab bar is set in its own typeface at
+   * a size the selection animation and the truncation rules are tuned around;
+   * substituting another one changes the metrics they depend on. Brand belongs in
+   * the colours, not here.
+   */
   fontFamily?: string | undefined
+  /**
+   * Let the bar shrink out of the way as the reader scrolls, where the platform
+   * offers that. `automatic` follows whatever the OS considers normal, which is
+   * the right answer unless there is a reason it is not.
+   */
+  minimize?: 'automatic' | 'never' | 'onScrollDown' | 'onScrollUp' | undefined
 }
 
 /**
@@ -34,7 +47,7 @@ export type NavigationTabsProps = {
  * product names a tab and an idea, and this turns those into the glyph and the
  * colours each platform expects.
  */
-export function NavigationTabs({ tabs, fontFamily }: NavigationTabsProps) {
+export function NavigationTabs({ tabs, fontFamily, minimize = 'automatic' }: NavigationTabsProps) {
   const theme = useTheme()
   const bar = resolveTabBar(theme, Platform.OS === 'ios' ? 'ios' : Platform.OS === 'android' ? 'android' : 'other')
 
@@ -45,6 +58,7 @@ export function NavigationTabs({ tabs, fontFamily }: NavigationTabsProps) {
       {...(bar.indicatorColor === undefined ? null : { indicatorColor: bar.indicatorColor })}
       {...(bar.rippleColor === undefined ? null : { rippleColor: bar.rippleColor })}
       {...(fontFamily === undefined ? null : { labelStyle: { fontFamily } })}
+      minimizeBehavior={minimize}
     >
       {tabs.map((tab) => {
         const glyphs = glyphsFor(tab.icon)

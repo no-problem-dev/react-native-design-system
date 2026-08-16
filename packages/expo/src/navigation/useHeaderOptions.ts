@@ -37,7 +37,6 @@ export function useHeaderOptions(options: HeaderOptions) {
     headerShown: true,
     title: options.title,
     headerTintColor: header.tintColor,
-    headerTransparent: header.transparent,
     headerTitleStyle: {
       color: header.titleColor,
       ...(options.fontFamily === undefined ? null : { fontFamily: options.fontFamily }),
@@ -45,7 +44,6 @@ export function useHeaderOptions(options: HeaderOptions) {
     ...(header.backgroundColor === undefined
       ? null
       : { headerStyle: { backgroundColor: header.backgroundColor } }),
-    ...(header.blurEffect === undefined ? null : { headerBlurEffect: header.blurEffect }),
     // Only iOS has this idea, and passing it elsewhere is ignored rather than wrong.
     ...(options.large === true ? { headerLargeTitle: true } : null),
   } as const
