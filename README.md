@@ -105,11 +105,44 @@ This package imports no platform effect. An adapter passes in a `MaterialAdapter
 capabilities it found and a renderer to use — and without one everything degrades to fills.
 That is what lets it install into a project that has none of those libraries.
 
+## Testing
+
+The catalog under `apps/catalog` is the test suite. Every story runs in a real
+browser through Vitest, with the accessibility rules applied to each one. There is
+no second suite to keep in step — writing the catalog *is* writing the regression
+tests.
+
+Splitting components at the material was done for this. Measured on what is here now:
+
+| Path | Where it can be checked |
+| --- | --- |
+| Layout, spacing, radii, every variant and state | Browser |
+| Colour contrast, roles, focus, labels | Browser |
+| **The glass outcome, rendered from its resolved value** | **Browser** |
+| **The fill outcome, at every height** | **Browser** |
+| Whether the platform truly offers glass | Device only |
+| Platform-supplied colours | Device only |
+| Native shadow and tonal elevation fidelity | Device only |
+
+Every rendering path is reachable without a device. What is left for a real one is
+capability detection and platform fidelity — a handful of screenshots rather than a
+whole suite.
+
+Contrast is checked twice: by the accessibility rules in the browser, which is the
+honest check, and by a unit test over every appearance, variant and size, which runs
+in milliseconds and names the exact pair that broke.
+
+```sh
+pnpm --filter catalog dev     # open the catalog
+pnpm --filter catalog test    # run the stories as tests
+```
+
 ## Development
 
 ```sh
 pnpm install
-pnpm verify     # purity, build, typecheck, test
+pnpm --filter catalog exec playwright install chromium
+pnpm verify     # purity, build, typecheck, test, packaging
 ```
 
 ## Licence
