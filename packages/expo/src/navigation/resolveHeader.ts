@@ -12,7 +12,8 @@ type Palette = { colors: ColorScheme }
  * colours would be overriding a decision that was made correctly.
  */
 export type ResolvedHeader = {
-  backgroundColor: string
+  /** Undefined where the platform draws a material behind the bar. */
+  backgroundColor: string | undefined
   /** The back control and any action items. */
   tintColor: string
   titleColor: string
@@ -25,24 +26,20 @@ export type ResolvedHeader = {
 /**
  * Decide how the header should be dressed.
  *
- * Both platforms are told the background. This was not the first answer: the bar
- * has a system material of its own, and letting it draw that seemed obviously
- * right. It is wrong here, and the way it is wrong is worth recording — a native
- * stack header left without a background keeps the *light* one in the dark
- * appearance, so the bar stays white while everything under it turns dark, and
- * the title, coloured for the theme, disappears into it.
+ * The split is the same one the tab bar has, for the same reason: iOS draws its own
+ * material and a background colour replaces it; Android expects the app to supply
+ * the surface its top app bar sits on.
  *
- * The blur is what is lost, and it is a real loss. Getting it back means floating
- * the bar over the content, which every screen then has to handle insets for — a
- * larger and more easily broken change than an opaque bar in the right colour.
- * The tab bar is untouched by this and keeps its material.
- *
- * What differs by platform is only which colour leads the controls: iOS tints its
- * bar buttons with the accent, Android draws them in the on-surface colour.
+ * A warning, because this looked wrong once and the wrong fix is the obvious one:
+ * if the bar stays light while the page under it goes dark, the background is not
+ * what is missing. The navigator's own theme is — its `dark` flag is what the
+ * native stack turns into the bar's interface style, and an app that never supplies
+ * one gets the light theme for the life of the process. Painting the bar hides that
+ * and costs the material; `navigationTheme` is the fix.
  */
 export function resolveHeader(theme: Palette, platform: 'ios' | 'android' | 'other'): ResolvedHeader {
   return {
-    backgroundColor: theme.colors.surface,
+    backgroundColor: platform === 'ios' ? undefined : theme.colors.surface,
     tintColor: platform === 'ios' ? theme.colors.primary : theme.colors.onSurface,
     titleColor: theme.colors.onSurface,
     // A search field inside the bar does not inherit the bar's colours. Left

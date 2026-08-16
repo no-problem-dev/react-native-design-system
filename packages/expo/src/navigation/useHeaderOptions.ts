@@ -74,7 +74,9 @@ export function useHeaderOptions(options: HeaderOptions) {
       color: header.titleColor,
       ...(options.fontFamily === undefined ? null : { fontFamily: options.fontFamily }),
     },
-    headerStyle: { backgroundColor: header.backgroundColor },
+    ...(header.backgroundColor === undefined
+      ? null
+      : { headerStyle: { backgroundColor: header.backgroundColor } }),
     // Only iOS has this idea, and passing it elsewhere is ignored rather than wrong.
     ...(options.large === true ? { headerLargeTitle: true } : null),
     ...(options.search === undefined

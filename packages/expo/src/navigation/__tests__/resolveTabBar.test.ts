@@ -86,19 +86,13 @@ describe('the icon vocabulary', () => {
 })
 
 describe('dressing the platform header', () => {
-  it('supplies the background on both platforms', () => {
-    // Left without one, a native stack header keeps the light background in the
-    // dark appearance: the bar stays white while the page under it turns dark,
-    // and the title — coloured for the theme — disappears into it.
-    for (const platform of ['ios', 'android'] as const) {
-      expect(resolveHeader(theme, platform).backgroundColor).toBe(theme.colors.surface)
-    }
+  it('leaves the bar itself to the platform that draws its own material', () => {
+    expect(resolveHeader(theme, 'ios').backgroundColor).toBeUndefined()
   })
 
-  it('follows the appearance, which is the whole reason it names a colour', () => {
-    const dark = { colors: scheme.dark }
-    expect(resolveHeader(dark, 'ios').backgroundColor).toBe(scheme.dark.surface)
-    expect(resolveHeader(dark, 'ios').backgroundColor).not.toBe(scheme.light.surface)
+  it('supplies the surface on the platform that expects it', () => {
+    expect(resolveHeader(theme, 'android').backgroundColor).toBe(theme.colors.surface)
+    expect(resolveHeader({ colors: scheme.dark }, 'android').backgroundColor).toBe(scheme.dark.surface)
   })
 
   it('says nothing about where the title goes or how the back control looks', () => {
