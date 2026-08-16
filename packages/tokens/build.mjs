@@ -80,7 +80,9 @@ StyleDictionary.registerFormat({
   format() {
     return [
       HEADER,
-      `import data from './tokens.json' with { type: 'json' }\n`,
+      // Plain import, no import attributes: the syntax is new and not every
+      // bundler in the ecosystem parses it yet.
+      `import data from './tokens.json'\n`,
       '// One artifact, read two ways: this module for TypeScript, the JSON for',
       '// everything that is not.',
       `export const primitive = data.primitive`,
