@@ -9,6 +9,19 @@ export type HeaderOptions = {
   fontFamily?: string | undefined
   /** iOS shows a large title that collapses as the reader scrolls. */
   large?: boolean | undefined
+  /**
+   * What the back control says.
+   *
+   * `minimal` is the default here, against the platform's own — and for a reason.
+   * The platform default shows the *previous screen's* title, which is a good
+   * idea right up until the previous screen is a layout group, at which point the
+   * bar reads something like `(tabs)`: an implementation detail presented to the
+   * reader as the name of where they came from.
+   *
+   * Set it to `default` on screens whose parent genuinely has a name worth
+   * showing, or `generic` for the platform's own word for going back.
+   */
+  back?: 'minimal' | 'generic' | 'default' | undefined
 }
 
 /**
@@ -37,6 +50,7 @@ export function useHeaderOptions(options: HeaderOptions) {
     headerShown: true,
     title: options.title,
     headerTintColor: header.tintColor,
+    headerBackButtonDisplayMode: options.back ?? 'minimal',
     headerTitleStyle: {
       color: header.titleColor,
       ...(options.fontFamily === undefined ? null : { fontFamily: options.fontFamily }),
