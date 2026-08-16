@@ -1,0 +1,22 @@
+{
+  "control": {
+    "light": {
+      "primaryFill": { "$value": "{color.blue.600}", "$type": "color" },
+      "primaryLabel": { "$value": "#FFFFFF", "$type": "color" },
+      "secondaryFill": { "$value": "{color.purple.600}", "$type": "color" },
+      "secondaryLabel": { "$value": "#FFFFFF", "$type": "color" },
+      "dangerFill": { "$value": "{color.red.600}", "$type": "color" },
+      "dangerLabel": { "$value": "#FFFFFF", "$type": "color" },
+      "ghostLabel": { "$value": "{color.blue.600}", "$type": "color" }
+    },
+    "dark": {
+      "primaryFill": { "$value": "{color.blue.400}", "$type": "color" },
+      "primaryLabel": { "$value": "{color.gray.900}", "$type": "color" },
+      "secondaryFill": { "$value": "{color.purple.400}", "$type": "color" },
+      "secondaryLabel": { "$value": "{color.gray.900}", "$type": "color" },
+      "dangerFill": { "$value": "{color.red.400}", "$type": "color" },
+      "dangerLabel": { "$value": "{color.gray.900}", "$type": "color" },
+      "ghostLabel": { "$value": "{color.blue.400}", "$type": "color" }
+    }
+  }
+}

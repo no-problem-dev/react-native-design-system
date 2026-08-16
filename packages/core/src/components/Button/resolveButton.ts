@@ -29,21 +29,24 @@ const sizing: Readonly<
 }
 
 /**
- * A button's colours always come from a role and its matching `on` role, never
- * from two separately chosen values. Pairing them this way means the label is
- * legible on the fill by construction rather than by review.
+ * Colours come from the control layer, not from the semantic one.
+ *
+ * The semantic `primary` is the brand's blue; a button fills a large area and puts
+ * text on top of it, and that same blue with white on it measures 3.68:1 — below
+ * what a reader with low vision needs. The control tokens hold a step of the same
+ * hue chosen so every pair clears 4.5:1, which `contrast.test.ts` checks.
  */
 function palette(variant: ButtonVariant, theme: Theme) {
-  const { colors } = theme
+  const { colors, control } = theme
   switch (variant) {
     case 'primary':
-      return { backgroundColor: colors.primary, labelColor: colors.onPrimary, borderColor: undefined }
+      return { backgroundColor: control.primaryFill, labelColor: control.primaryLabel, borderColor: undefined }
     case 'secondary':
-      return { backgroundColor: colors.secondary, labelColor: colors.onSecondary, borderColor: undefined }
+      return { backgroundColor: control.secondaryFill, labelColor: control.secondaryLabel, borderColor: undefined }
     case 'danger':
-      return { backgroundColor: colors.error, labelColor: colors.onError, borderColor: undefined }
+      return { backgroundColor: control.dangerFill, labelColor: control.dangerLabel, borderColor: undefined }
     case 'ghost':
-      return { backgroundColor: 'transparent', labelColor: colors.primary, borderColor: colors.outline }
+      return { backgroundColor: 'transparent', labelColor: control.ghostLabel, borderColor: colors.outline }
   }
 }
 

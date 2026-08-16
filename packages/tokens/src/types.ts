@@ -5,7 +5,7 @@
  * these types change with it, and every theme that fails to supply the new value
  * stops compiling. A hand-written interface would let that omission through.
  */
-import { iconSize, radius, scheme, spacing } from './generated/tokens.js'
+import { control, iconSize, radius, scheme, spacing } from './generated/tokens.js'
 
 export type SpacingKey = keyof typeof spacing
 export type RadiusKey = keyof typeof radius
@@ -25,3 +25,13 @@ export type ColorRole = keyof (typeof scheme)['light']
 export type ColorScheme = Readonly<Record<ColorRole, string>>
 
 export type ColorSchemeName = keyof typeof scheme
+
+/**
+ * Values that only a control uses.
+ *
+ * The third layer exists for cases like this one: the semantic `primary` is the
+ * brand's blue, but a button fills a large area and carries text on top of it, so
+ * it needs a step of that same hue that a reader can actually read. Changing the
+ * semantic token to suit buttons would drag every other use along with it.
+ */
+export type ControlTokens = Readonly<Record<keyof (typeof control)['light'], string>>

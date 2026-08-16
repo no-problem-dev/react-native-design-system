@@ -1,4 +1,10 @@
-import type { ColorScheme, IconSizeScale, RadiusScale, SpacingScale } from '@no-problem/design-tokens'
+import type {
+  ColorScheme,
+  ControlTokens,
+  IconSizeScale,
+  RadiusScale,
+  SpacingScale,
+} from '@no-problem/design-tokens'
 
 /** Light or dark. Kept separate from the colour values so a theme can be asked for either. */
 export type Appearance = 'light' | 'dark'
@@ -12,6 +18,8 @@ export type Appearance = 'light' | 'dark'
 export type Theme = {
   appearance: Appearance
   colors: ColorScheme
+  /** Values only interactive controls use. See ControlTokens for why they exist. */
+  control: ControlTokens
   spacing: SpacingScale
   radius: RadiusScale
   iconSize: IconSizeScale

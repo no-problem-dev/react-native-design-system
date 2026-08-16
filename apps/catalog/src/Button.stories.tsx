@@ -1,0 +1,67 @@
+import type { ButtonSize, ButtonVariant } from '@no-problem/design-system'
+import { Button } from '@no-problem/design-system'
+import type { Meta, StoryObj } from '@storybook/react-native-web-vite'
+import { expect, fn, userEvent, within } from 'storybook/test'
+import { View } from 'react-native'
+
+const variants: ButtonVariant[] = ['primary', 'secondary', 'ghost', 'danger']
+const sizes: ButtonSize[] = ['small', 'medium', 'large']
+
+const meta = {
+  title: 'Button',
+  component: Button,
+  args: { variant: 'primary', size: 'medium', children: 'Continue', onPress: fn() },
+} satisfies Meta<typeof Button>
+
+export default meta
+type Story = StoryObj<typeof meta>
+
+export const Default: Story = {}
+
+/** Every variant against the same background, which is where a weak pairing shows. */
+export const EveryVariant: Story = {
+  render: (args) => (
+    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
+      {variants.map((variant) => (
+        <Button key={variant} {...args} variant={variant}>
+          {variant}
+        </Button>
+      ))}
+    </View>
+  ),
+}
+
+export const EverySize: Story = {
+  render: (args) => (
+    <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+      {sizes.map((size) => (
+        <Button key={size} {...args} size={size}>
+          {size}
+        </Button>
+      ))}
+    </View>
+  ),
+}
+
+export const Disabled: Story = {
+  args: { disabled: true, children: 'Unavailable' },
+}
+
+/** A press has to reach the caller, and must not when the button is disabled. */
+export const Pressing: Story = {
+  args: { children: 'Press me' },
+  play: async ({ args, canvasElement }) => {
+    const canvas = within(canvasElement)
+    await userEvent.click(canvas.getByText('Press me'))
+    await expect(args.onPress).toHaveBeenCalledOnce()
+  },
+}
+
+export const DisabledDoesNotFire: Story = {
+  args: { disabled: true, children: 'Unavailable' },
+  play: async ({ args, canvasElement }) => {
+    const canvas = within(canvasElement)
+    await userEvent.click(canvas.getByText('Unavailable'), { pointerEventsCheck: 0 })
+    await expect(args.onPress).not.toHaveBeenCalled()
+  },
+}

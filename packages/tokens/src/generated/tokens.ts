@@ -279,3 +279,24 @@ export const scheme = {
     elevatedSurfaceHigh: "#1f2937",
   },
 } as const
+
+export const control = {
+  light: {
+    primaryFill: "#2563eb",
+    primaryLabel: "#ffffff",
+    secondaryFill: "#9333ea",
+    secondaryLabel: "#ffffff",
+    dangerFill: "#dc2626",
+    dangerLabel: "#ffffff",
+    ghostLabel: "#2563eb",
+  },
+  dark: {
+    primaryFill: "#60a5fa",
+    primaryLabel: "#111827",
+    secondaryFill: "#c084fc",
+    secondaryLabel: "#111827",
+    dangerFill: "#f87171",
+    dangerLabel: "#111827",
+    ghostLabel: "#60a5fa",
+  },
+} as const

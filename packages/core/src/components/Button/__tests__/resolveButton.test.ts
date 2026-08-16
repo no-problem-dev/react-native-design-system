@@ -14,12 +14,12 @@ const rest = { pressed: false, disabled: false }
 describe('button colours', () => {
   it('pairs every fill with the role meant to sit on it', () => {
     expect(resolveButton('primary', 'medium', rest, light)).toMatchObject({
-      backgroundColor: light.colors.primary,
-      labelColor: light.colors.onPrimary,
+      backgroundColor: light.control.primaryFill,
+      labelColor: light.control.primaryLabel,
     })
     expect(resolveButton('danger', 'medium', rest, light)).toMatchObject({
-      backgroundColor: light.colors.error,
-      labelColor: light.colors.onError,
+      backgroundColor: light.control.dangerFill,
+      labelColor: light.control.dangerLabel,
     })
   })
 
@@ -27,19 +27,19 @@ describe('button colours', () => {
     const ghost = resolveButton('ghost', 'medium', rest, light)
     expect(ghost.backgroundColor).toBe('transparent')
     expect(ghost.borderColor).toBe(light.colors.outline)
+    expect(ghost.labelColor).toBe(light.control.ghostLabel)
   })
 
-  it('takes every colour from the theme it was given', () => {
+  it('takes every colour from the theme it was given, never from a literal', () => {
+    const palette = (theme: typeof light) =>
+      new Set<string>([...Object.values(theme.colors), ...Object.values(theme.control), 'transparent'])
+
     for (const variant of variants) {
-      const inLight = resolveButton(variant, 'medium', rest, light)
-      const inDark = resolveButton(variant, 'medium', rest, dark)
-      const fromLight = new Set(Object.values(light.colors))
-      const fromDark = new Set(Object.values(dark.colors))
-      for (const colour of [inLight.backgroundColor, inLight.labelColor]) {
-        expect(colour === 'transparent' || fromLight.has(colour), `${variant}: ${colour}`).toBe(true)
-      }
-      for (const colour of [inDark.backgroundColor, inDark.labelColor]) {
-        expect(colour === 'transparent' || fromDark.has(colour), `${variant}: ${colour}`).toBe(true)
+      for (const theme of [light, dark]) {
+        const button = resolveButton(variant, 'medium', rest, theme)
+        for (const colour of [button.backgroundColor, button.labelColor]) {
+          expect(palette(theme).has(colour), `${theme.appearance} / ${variant}: ${colour}`).toBe(true)
+        }
       }
     }
   })

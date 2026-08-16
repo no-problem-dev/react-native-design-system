@@ -19,6 +19,9 @@ export { resolveMaterial } from './material/resolve.js'
 export { elevationLevel, plainCapabilities } from './material/types.js'
 export type { Elevation, MaterialCapabilities, ResolvedMaterial, ShadowSpec } from './material/types.js'
 
+// Accessibility
+export { contrastMinimum, contrastRatio, luminance, meetsContrast } from './a11y/contrast.js'
+
 // Components
 export { Surface } from './components/Surface/Surface.js'
 export type { SurfaceProps } from './components/Surface/Surface.js'
@@ -33,10 +36,11 @@ export { resolveButton } from './components/Button/resolveButton.js'
 export type { ButtonSize, ButtonState, ButtonVariant, ResolvedButton } from './components/Button/resolveButton.js'
 
 // Tokens, re-exported so a consumer needs one dependency rather than two.
-export { iconSize, radius, scheme, spacing } from '@no-problem/design-tokens'
+export { control, iconSize, radius, scheme, spacing } from '@no-problem/design-tokens'
 export type {
   ColorRole,
   ColorScheme,
+  ControlTokens,
   IconSizeKey,
   RadiusKey,
   SpacingKey,

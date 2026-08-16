@@ -10,10 +10,11 @@
  * a rule that a layer "should not be used" is weaker than a layer that cannot
  * be reached.
  */
-export { spacing, radius, iconSize, scheme } from './generated/tokens.js'
+export { spacing, radius, iconSize, scheme, control } from './generated/tokens.js'
 
 export type {
   ColorRole,
+  ControlTokens,
   ColorScheme,
   ColorSchemeName,
   IconSizeKey,

@@ -59,7 +59,7 @@ StyleDictionary.registerFormat({
   name: 'np/ts-tokens',
   format({ dictionary }) {
     const all = deepMap(plain(dictionary.tokens), unpx)
-    const { color, space, radiusStep, spacing, radius, iconSize, scheme } = all
+    const { color, space, radiusStep, spacing, radius, iconSize, scheme, control } = all
     return [
       HEADER,
       `export const primitive = ${tsLiteral({ color, space, radiusStep })} as const\n`,
@@ -67,6 +67,7 @@ StyleDictionary.registerFormat({
       `export const radius = ${tsLiteral(radius)} as const\n`,
       `export const iconSize = ${tsLiteral(iconSize)} as const\n`,
       `export const scheme = ${tsLiteral(scheme)} as const\n`,
+      `export const control = ${tsLiteral(control)} as const\n`,
     ].join('\n')
   },
 })

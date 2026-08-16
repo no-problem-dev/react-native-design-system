@@ -1,4 +1,4 @@
-import { iconSize, radius, scheme, spacing } from '@no-problem/design-tokens'
+import { control, iconSize, radius, scheme, spacing } from '@no-problem/design-tokens'
 import type { ColorScheme } from '@no-problem/design-tokens'
 
 import type { Appearance, ColorSource, Theme } from './types.js'
@@ -29,5 +29,5 @@ export function createTheme(options: {
         ? (dynamicColors ?? brandColors(appearance))
         : (dynamicColors ?? brandColors(appearance))
 
-  return { appearance, colors, spacing, radius, iconSize }
+  return { appearance, colors, control: control[appearance], spacing, radius, iconSize }
 }

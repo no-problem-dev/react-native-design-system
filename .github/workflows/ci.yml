@@ -28,7 +28,18 @@ jobs:
 
       - run: pnpm build
       - run: pnpm typecheck
+
+      # The catalog's stories run as tests in a real browser, so the browser has
+      # to be there before the test step rather than as part of it.
+      - name: Install browser
+        run: pnpm --filter catalog exec playwright install --with-deps chromium
+
       - run: pnpm test
+
+      # The static catalog is a deliverable of its own — the page other people are
+      # sent to look at. Building it here keeps that page from rotting unnoticed.
+      - name: Build catalog
+        run: pnpm --filter catalog build
 
       # What a consumer actually receives: the file list, the exports map, and
       # whether types resolve. These break silently — nothing in the repository
