@@ -82,6 +82,10 @@ export function useHeaderOptions(options: HeaderOptions) {
       : {
           headerSearchBarOptions: {
             placeholder: options.search.placeholder,
+            textColor: header.searchTextColor,
+            hintTextColor: header.searchHintColor,
+            headerIconColor: header.searchHintColor,
+            tintColor: header.tintColor,
             // The native field reports through an event; callers want the text.
             onChangeText: (event: { nativeEvent: { text: string } }) =>
               options.search?.onChangeText(event.nativeEvent.text),

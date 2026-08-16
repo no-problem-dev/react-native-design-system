@@ -16,6 +16,10 @@ export type ResolvedHeader = {
   /** The back control and any action items. */
   tintColor: string
   titleColor: string
+  /** What the reader has typed into the search field. */
+  searchTextColor: string
+  /** The placeholder, and the glyphs beside it. */
+  searchHintColor: string
 }
 
 /**
@@ -41,5 +45,10 @@ export function resolveHeader(theme: Palette, platform: 'ios' | 'android' | 'oth
     backgroundColor: theme.colors.surface,
     tintColor: platform === 'ios' ? theme.colors.primary : theme.colors.onSurface,
     titleColor: theme.colors.onSurface,
+    // A search field inside the bar does not inherit the bar's colours. Left
+    // alone it keeps the light appearance's ink, which on a dark bar is a
+    // placeholder and a magnifier that are nearly invisible.
+    searchTextColor: theme.colors.onSurface,
+    searchHintColor: theme.colors.onSurfaceVariant,
   }
 }

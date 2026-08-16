@@ -88,13 +88,17 @@ describe('dressing the platform header', () => {
 
   it('says nothing about where the title goes or how the back control looks', () => {
     // Both differ between platforms and both are already right. The moment this
-    // object grows an alignment or a glyph, the app has started overriding the OS.
+    // object grows an alignment, a glyph or a size, the app has started overriding
+    // the OS — so what is checked is that every key it has is a colour, rather
+    // than a list of names that has to be edited whenever a colour is added.
     for (const platform of ['ios', 'android'] as const) {
-      expect(Object.keys(resolveHeader(theme, platform)).sort()).toEqual([
-        'backgroundColor',
-        'tintColor',
-        'titleColor',
-      ])
+      for (const key of Object.keys(resolveHeader(theme, platform))) {
+        expect({ platform, key, namesAColour: /Color$/.test(key) }).toEqual({
+          platform,
+          key,
+          namesAColour: true,
+        })
+      }
     }
   })
 
@@ -106,6 +110,25 @@ describe('dressing the platform header', () => {
         if (value === undefined) continue
         expect(palette.has(value), `${platform}: ${value}`).toBe(true)
       }
+    }
+  })
+})
+
+describe('the search field inside the header', () => {
+  it('is told its colours, because it does not inherit the bar’s', () => {
+    // Left alone it keeps the light appearance's ink, which on a dark bar is a
+    // placeholder and a magnifier nobody can see.
+    const dark = { colors: scheme.dark }
+    const header = resolveHeader(dark, 'ios')
+    expect(header.searchTextColor).toBe(scheme.dark.onSurface)
+    expect(header.searchHintColor).toBe(scheme.dark.onSurfaceVariant)
+    expect(header.searchTextColor).not.toBe(scheme.light.onSurface)
+  })
+
+  it('keeps the hint quieter than the text the reader typed', () => {
+    for (const appearance of ['light', 'dark'] as const) {
+      const header = resolveHeader({ colors: scheme[appearance] }, 'ios')
+      expect(header.searchHintColor).not.toBe(header.searchTextColor)
     }
   })
 })
