@@ -4,14 +4,14 @@ A design system for React Native where components are asked for an **intent**, a
 platform answers with the material it actually has.
 
 ```tsx
-<Surface elevation="floating" padding="lg">
+<Surface elevation="overlay" padding="lg">
   <Button variant="primary" onPress={submit}>Send</Button>
 </Surface>
 ```
 
-On a device that draws a glass material, that surface is glass. Where the reader turned
-transparency down, or the platform has nothing to offer, it is a fill with the shadow that
-reads as the same height. The caller writes one thing.
+On a device that draws a glass material, a surface that overlays content is glass. Where
+the reader turned transparency down, or the platform has nothing to offer, it is a fill
+with the shadow that reads as the same height. The caller writes one thing.
 
 The companion of [`swift-design-system`](https://github.com/no-problem-dev/swift-design-system):
 same token values, same colour roles, so an app that ships both platforms looks like one product.
@@ -91,13 +91,15 @@ truly offered glass — a handful of screenshots rather than a whole suite.
 The resolver never asks which operating system it is on. It asks what the platform offers,
 in order:
 
-1. A flat surface needs no material — it is part of the page.
+1. The surface is part of the page → a fill with the shadow that matches its height.
 2. The reader asked for less transparency → an opaque fill wins, always.
 3. The platform offers glass → glass, interactive only if it said so.
-4. Otherwise → a fill with the shadow that matches the intent.
+4. Otherwise → a fill.
 
 Version checks get this wrong twice: a version can ship without the interface, and a reader
 can turn the effect off regardless of what the hardware supports.
+
+Step 1 is not a capability question, and it was learned from a device — see *Testing* below.
 
 ### Adapters supply the platform, not the package
 
@@ -113,7 +115,7 @@ import { DesignSystemProvider } from '@no-problem/design-system-expo'
 export default function App() {
   return (
     <DesignSystemProvider colorSource="auto">
-      <Surface elevation="floating" padding="lg">…</Surface>
+      <Surface elevation="overlay" padding="lg">…</Surface>
     </DesignSystemProvider>
   )
 }
@@ -168,12 +170,13 @@ Running it on iOS 27 confirmed the ladder — glass available, interactive, rend
 supplied — and surfaced something no browser would have shown:
 
 **A glass surface over a plain background is almost invisible.** The material works by
-refracting what sits behind it, and a flat page gives it nothing to refract, so
-`raised`, `floating` and `overlay` come out nearly the same tone as the page and the
-sense of height disappears. Only `flat`, which is a fill by definition, reads clearly.
+refracting what sits behind it, and a flat page gives it nothing to refract, so every
+raised surface came out the same tone as the page and the sense of height vanished.
 
-That is a design question rather than a defect: the material is meant to sit over
-content. It is open, and listed below.
+That changed the design rather than the code around it. Glass is now used only for
+`overlay` — the one intent that means "this sits over other content" — and everything
+in the page flow is a fill with the shadow that matches its height. The vocabulary
+already knew which surfaces float; the device is what made that worth acting on.
 
 Contrast is checked twice: by the accessibility rules in the browser, which is the
 honest check, and by a unit test over every appearance, variant and size, which runs
@@ -183,15 +186,6 @@ in milliseconds and names the exact pair that broke.
 pnpm --filter catalog dev     # open the catalog
 pnpm --filter catalog test    # run the stories as tests
 ```
-
-## Open questions
-
-**How a glass surface should behave over a plain background.** The material needs
-content behind it to read as a material at all. Three ways out, none obviously right:
-keep a hairline border and a shadow under the glass so height survives either way;
-fall back to a fill when there is nothing behind; or say that glass is only for
-surfaces that overlay content and leave the rest as fills. The last is closest to what
-the platform intends and the furthest from "one component, every situation".
 
 ## Development
 

@@ -13,24 +13,31 @@ const withGlass = (over: Partial<MaterialCapabilities['glass']> = {}): MaterialC
 })
 
 describe('the material ladder', () => {
-  it('never uses a material for a flat surface, even when glass is available', () => {
-    const material = resolveMaterial('flat', theme, withGlass())
-    expect(material.kind).toBe('fill')
+  it('keeps every surface that is part of the page a fill, even where glass exists', () => {
+    for (const elevation of ['flat', 'raised', 'floating'] as const) {
+      expect(resolveMaterial(elevation, theme, withGlass()).kind, elevation).toBe('fill')
+    }
   })
 
-  it('uses glass when the platform offers it', () => {
-    const material = resolveMaterial('floating', theme, withGlass())
+  it('uses glass for a surface that overlays content, when the platform offers it', () => {
+    const material = resolveMaterial('overlay', theme, withGlass())
     expect(material).toMatchObject({ kind: 'glass', interactive: true })
   })
 
   it('keeps the material but drops the interaction when only the effect is offered', () => {
-    const material = resolveMaterial('floating', theme, withGlass({ interactive: false }))
+    const material = resolveMaterial('overlay', theme, withGlass({ interactive: false }))
     expect(material).toMatchObject({ kind: 'glass', interactive: false })
   })
 
   it('falls back to a fill when the platform offers nothing', () => {
-    const material = resolveMaterial('floating', theme, plainCapabilities)
+    const material = resolveMaterial('overlay', theme, plainCapabilities)
     expect(material.kind).toBe('fill')
+  })
+
+  it('always gives glass a border, so a panel is never invisible', () => {
+    const material = resolveMaterial('overlay', theme, withGlass())
+    if (material.kind !== 'glass') throw new Error('expected glass')
+    expect(material.borderColor).toBe(theme.colors.outline)
   })
 
   it('lets reduced transparency win over an available glass material', () => {

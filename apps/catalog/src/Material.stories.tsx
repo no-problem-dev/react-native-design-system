@@ -26,7 +26,7 @@ function Label({ children }: { children: ReactNode }) {
 function Case({ title, adapter }: { title: string; adapter: MaterialAdapter }) {
   return (
     <MaterialProvider adapter={adapter}>
-      <Surface elevation="floating" padding="lg" radius="md">
+      <Surface elevation="overlay" padding="lg" radius="md">
         <Label>{title}</Label>
       </Surface>
     </MaterialProvider>
