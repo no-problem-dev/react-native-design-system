@@ -93,14 +93,16 @@ export const manifest: Record<string, Item> = {
     ],
   },
 
-  'navigation-tabs': {
-    name: 'navigation-tabs',
-    description: 'The platform’s own tab bar, dressed in the product’s colours.',
+  navigation: {
+    name: 'navigation',
+    description: 'The platform’s own tab bar and header, dressed in the product’s colours.',
     needs: ['theme'],
     files: [
       { origin: 'expo', from: 'navigation/icons.ts', to: 'navigation/icons.ts' },
       { origin: 'expo', from: 'navigation/resolveTabBar.ts', to: 'navigation/resolveTabBar.ts' },
       { origin: 'expo', from: 'navigation/NavigationTabs.tsx', to: 'navigation/NavigationTabs.tsx' },
+      { origin: 'expo', from: 'navigation/resolveHeader.ts', to: 'navigation/resolveHeader.ts' },
+      { origin: 'expo', from: 'navigation/useHeaderOptions.ts', to: 'navigation/useHeaderOptions.ts' },
     ],
   },
 
