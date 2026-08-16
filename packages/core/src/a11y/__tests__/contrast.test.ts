@@ -141,3 +141,16 @@ describe('a product supplying its own colours', () => {
     expect(theme.colors.success).toBe(shipped.colors.success)
   })
 })
+
+describe('the shapes a colour is written in', () => {
+  it('reads the short forms, which React Native accepts too', () => {
+    expect(luminance('#fff')).toBeCloseTo(luminance('#ffffff'), 10)
+    expect(luminance('#000f')).toBeCloseTo(luminance('#000000'), 10)
+    expect(contrastRatio('#fff', '#000')).toBeCloseTo(21, 1)
+  })
+
+  it('still refuses something that is not a colour', () => {
+    expect(() => luminance('rebeccapurple')).toThrow(/Not a hex colour/)
+    expect(() => luminance('#12345')).toThrow(/Not a hex colour/)
+  })
+})

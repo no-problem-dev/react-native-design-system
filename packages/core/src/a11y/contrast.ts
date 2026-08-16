@@ -10,10 +10,23 @@ function channel(value: number): number {
   return value <= 0.03928 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4
 }
 
-/** Relative luminance of a `#rrggbb` or `#rrggbbaa` colour. Alpha is ignored. */
+/**
+ * Expand `#rgb` and `#rgba` to their six-digit form.
+ *
+ * Both are ordinary ways to write a colour and React Native accepts them, so a
+ * palette will contain them sooner or later. Refusing them would make this
+ * throw on perfectly valid input.
+ */
+function sixDigits(color: string): string {
+  const hex = color.replace('#', '')
+  const expanded = hex.length === 3 || hex.length === 4 ? [...hex].map((c) => c + c).join('') : hex
+  return expanded.slice(0, 6)
+}
+
+/** Relative luminance of a hex colour. Any alpha channel is ignored. */
 export function luminance(color: string): number {
-  const hex = color.replace('#', '').slice(0, 6)
-  if (hex.length !== 6) throw new Error(`Not a hex colour: ${color}`)
+  const hex = sixDigits(color)
+  if (!/^[0-9a-fA-F]{6}$/.test(hex)) throw new Error(`Not a hex colour: ${color}`)
   const [r, g, b] = [0, 2, 4].map((i) => channel(Number.parseInt(hex.slice(i, i + 2), 16) / 255)) as [
     number,
     number,
@@ -49,7 +62,7 @@ export function meetsContrast(
 }
 
 function toRgb(color: string): [number, number, number] {
-  const hex = color.replace('#', '').slice(0, 6)
+  const hex = sixDigits(color)
   return [0, 2, 4].map((i) => Number.parseInt(hex.slice(i, i + 2), 16)) as [number, number, number]
 }
 
