@@ -32,6 +32,11 @@ const tokenFiles: FileSpec[] = [
   { origin: 'tokens', from: 'generated/tokens.ts', to: 'tokens/tokens.ts' },
   { origin: 'tokens', from: 'types.ts', to: 'tokens/types.ts' },
   { origin: 'tokens', from: 'index.ts', to: 'tokens/index.ts' },
+  // Turns whatever values the product decided on into the forms its toolchain reads.
+  // Copied rather than run from here: the product's build has to be able to run it,
+  // and a build step that reaches back into a package it only copied from is exactly
+  // the dependency this distribution avoids.
+  { origin: 'tokens', from: 'brand-artifacts.cjs', to: 'tokens/brand-artifacts.cjs' },
 ]
 
 export const manifest: Record<string, Item> = {
