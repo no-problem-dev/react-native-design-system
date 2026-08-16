@@ -163,6 +163,12 @@ rather than an oversight. Each copied file carries one line naming the version i
 from — no paths, no accounts, no links, because the file is going to live in someone
 else's repository.
 
+File extensions are dropped from relative imports on the way out. The source writes
+`'./types.js'` because it is published as ESM and compiled first; a copy has no build
+step and joins the receiving project's own module graph, where that names a file which
+does not exist. Bundlers forgive it. Test runners do not — and the first copy into a
+real project found exactly that, one runner in.
+
 ## Testing
 
 The catalog under `apps/catalog` is the test suite. Every story runs in a real

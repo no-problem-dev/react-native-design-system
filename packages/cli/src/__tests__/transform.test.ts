@@ -38,26 +38,32 @@ describe('working out what to copy', () => {
 describe('pointing a copied file at its neighbours', () => {
   it('replaces the package import with a path back to the copied tokens', () => {
     expect(rewriteImports(`import { spacing } from '@no-problem/design-tokens'`, 'theme/types.ts')).toBe(
-      `import { spacing } from '../tokens/index.js'`,
+      `import { spacing } from '../tokens'`,
     )
   })
 
   it('counts the depth of where the file lands', () => {
     expect(rewriteImports(`from '@no-problem/design-tokens'`, 'components/Surface/Surface.tsx')).toBe(
-      `from '../../tokens/index.js'`,
+      `from '../../tokens'`,
     )
-    expect(rewriteImports(`from '@no-problem/design-tokens'`, 'index.ts')).toBe(`from './tokens/index.js'`)
+    expect(rewriteImports(`from '@no-problem/design-tokens'`, 'index.ts')).toBe(`from './tokens'`)
   })
 
   it('flattens the generated file away, since the copy has no build step', () => {
     expect(rewriteImports(`export { spacing } from './generated/tokens.js'`, 'tokens/index.ts')).toBe(
-      `export { spacing } from './tokens.js'`,
+      `export { spacing } from './tokens'`,
     )
   })
 
-  it('leaves imports between copied files alone', () => {
-    const line = `import { useTheme } from '../../theme/ThemeProvider.js'`
-    expect(rewriteImports(line, 'components/Surface/Surface.tsx')).toBe(line)
+  it('drops the extension from relative imports, which a copy has no build step to resolve', () => {
+    expect(rewriteImports(`import { useTheme } from '../../theme/ThemeProvider.js'`, 'a/b/c.tsx')).toBe(
+      `import { useTheme } from '../../theme/ThemeProvider'`,
+    )
+  })
+
+  it('leaves the extensionless platform import alone', () => {
+    const line = `import { bindings } from './platform'`
+    expect(rewriteImports(line, 'adapter/DesignSystemProvider.tsx')).toBe(line)
   })
 
   it('rewrites every occurrence, not just the first', () => {
@@ -90,8 +96,14 @@ describe('what actually gets produced', () => {
 
   it('leaves nothing pointing at a package the destination will not have', () => {
     for (const file of files) {
-      expect(file.content, file.path).not.toContain('@no-problem/design-tokens')
-      expect(file.content, file.path).not.toContain('@no-problem/design-system"')
+      expect(file.content, file.path).not.toContain(`'@no-problem/design-tokens'`)
+      expect(file.content, file.path).not.toContain(`'@no-problem/design-system'`)
+    }
+  })
+
+  it('leaves no relative import carrying a file extension', () => {
+    for (const file of files) {
+      expect(file.content, file.path).not.toMatch(/from '\.{1,2}\/[^']*\.js'/)
     }
   })
 

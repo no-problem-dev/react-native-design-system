@@ -46,6 +46,8 @@ export function provenance(version: string): string {
 const TOKENS_IMPORT = /(['"])@no-problem\/design-tokens\1/g
 const CORE_IMPORT = /(['"])@no-problem\/design-system\1/g
 const GENERATED_IMPORT = /(['"])\.\/generated\/tokens\.js\1/g
+/** A relative specifier that names a file, e.g. `'../theme/types.js'`. */
+const RELATIVE_WITH_EXTENSION = /(['"])(\.{1,2}\/[^'"]*)\.js\1/g
 
 /**
  * Point a copied file at its neighbours instead of at packages that will not be
@@ -53,13 +55,20 @@ const GENERATED_IMPORT = /(['"])\.\/generated\/tokens\.js\1/g
  *
  * `destinationPath` is where the file lands under the destination root; how deep it
  * sits is what decides the relative path back up to the copied tokens.
+ *
+ * File extensions are dropped from every relative import. They are written in the
+ * source because it is published as ESM and compiled first; a copy has no build
+ * step and joins the receiving project's own module graph, where `'./types.js'`
+ * names a file that does not exist. Bundlers forgive that. Test runners do not,
+ * and finding out in someone else's repository is the worst place to find out.
  */
 export function rewriteImports(source: string, destinationPath: string): string {
   const depth = destinationPath.split('/').length - 1
   const upwards = depth === 0 ? './' : '../'.repeat(depth)
 
   return source
-    .replace(TOKENS_IMPORT, `'${upwards}tokens/index.js'`)
-    .replace(CORE_IMPORT, `'${upwards}index.js'`)
-    .replace(GENERATED_IMPORT, `'./tokens.js'`)
+    .replace(TOKENS_IMPORT, `'${upwards}tokens'`)
+    .replace(CORE_IMPORT, `'${upwards}index'`)
+    .replace(GENERATED_IMPORT, `'./tokens'`)
+    .replace(RELATIVE_WITH_EXTENSION, `'$2'`)
 }

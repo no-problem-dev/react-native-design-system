@@ -8,7 +8,6 @@ import { useColorScheme } from 'react-native'
 // that must resolve to a different file per platform, and the bundler only offers
 // `platform.ios` / `platform.android` / `platform` as candidates when it is asked
 // for a module rather than for a named file.
-// eslint-disable-next-line import/extensions
 import { bindings } from './platform'
 
 export type DesignSystemProviderProps = {
