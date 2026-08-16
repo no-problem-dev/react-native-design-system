@@ -20,7 +20,7 @@ export { elevationLevel, plainCapabilities } from './material/types.js'
 export type { Elevation, MaterialCapabilities, ResolvedMaterial, ShadowSpec } from './material/types.js'
 
 // Accessibility
-export { contrastMinimum, contrastRatio, luminance, meetsContrast } from './a11y/contrast.js'
+export { contrastMinimum, contrastRatio, ensureContrast, luminance, meetsContrast } from './a11y/contrast.js'
 
 // Components
 export { Surface } from './components/Surface/Surface.js'

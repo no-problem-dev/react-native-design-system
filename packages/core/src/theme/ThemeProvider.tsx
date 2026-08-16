@@ -18,6 +18,8 @@ export type ThemeProviderProps = {
    * leave undefined and the theme falls back to the colours shipped here.
    */
   dynamicColors?: ColorScheme | undefined
+  /** This product's own colours. Anything left out keeps the shipped value. */
+  brand?: Partial<ColorScheme> | undefined
 }
 
 export function ThemeProvider({
@@ -25,13 +27,14 @@ export function ThemeProvider({
   appearance,
   colorSource = 'auto',
   dynamicColors,
+  brand,
 }: ThemeProviderProps) {
   const deviceAppearance = useColorScheme()
   const resolvedAppearance: Appearance = appearance ?? (deviceAppearance === 'dark' ? 'dark' : 'light')
 
   const theme = useMemo(
-    () => createTheme({ appearance: resolvedAppearance, colorSource, dynamicColors }),
-    [resolvedAppearance, colorSource, dynamicColors],
+    () => createTheme({ appearance: resolvedAppearance, colorSource, dynamicColors, brand }),
+    [resolvedAppearance, colorSource, dynamicColors, brand],
   )
 
   return <ThemeContext.Provider value={theme}>{children}</ThemeContext.Provider>

@@ -9,7 +9,7 @@ import type { ButtonSize, ButtonVariant } from '../../components/Button/resolveB
 import { resolveButton } from '../../components/Button/resolveButton.js'
 import { createTheme } from '../../theme/createTheme.js'
 import type { Appearance } from '../../theme/types.js'
-import { contrastMinimum, contrastRatio } from '../contrast.js'
+import { contrastMinimum, contrastRatio, ensureContrast, luminance } from '../contrast.js'
 
 const appearances: Appearance[] = ['light', 'dark']
 const variants: ButtonVariant[] = ['primary', 'secondary', 'ghost', 'danger']
@@ -70,4 +70,74 @@ describe('surface text is readable', () => {
       expect(contrastRatio(theme.colors.outline, theme.colors.surface)).toBeGreaterThanOrEqual(1.3)
     })
   }
+})
+
+describe('making a supplied colour readable', () => {
+  it('leaves a colour alone when it already passes', () => {
+    expect(ensureContrast('#1d4ed8', '#ffffff')).toBe('#1d4ed8')
+  })
+
+  it('moves a colour that does not pass until it does', () => {
+    // A brand blue that measures 3.91:1 against white — recognisable, not readable.
+    const fixed = ensureContrast('#2f6bff', '#ffffff')
+    expect(fixed).not.toBe('#2f6bff')
+    expect(contrastRatio(fixed, '#ffffff')).toBeGreaterThanOrEqual(contrastMinimum.normalText)
+  })
+
+  it('moves away from the text: darker under light text, lighter under dark text', () => {
+    // The same colour, failing in both directions, so the direction is what is tested
+    // rather than which threshold happened to be met already.
+    expect(luminance(ensureContrast('#e5484d', '#ffffff'))).toBeLessThan(luminance('#e5484d'))
+    expect(luminance(ensureContrast('#1d4ed8', '#111827'))).toBeGreaterThan(luminance('#1d4ed8'))
+  })
+
+  it('stops as soon as the threshold is met, rather than going to the extreme', () => {
+    const fixed = ensureContrast('#2f6bff', '#ffffff')
+    expect(fixed).not.toBe('#000000')
+    expect(contrastRatio(fixed, '#ffffff')).toBeLessThan(9)
+  })
+
+  it('always reaches the threshold, whatever it is given', () => {
+    for (const colour of ['#808080', '#2f6bff', '#e5484d', '#ffff00', '#00ff00']) {
+      for (const against of ['#ffffff', '#111827']) {
+        expect(
+          contrastRatio(ensureContrast(colour, against), against),
+          `${colour} on ${against}`,
+        ).toBeGreaterThanOrEqual(contrastMinimum.normalText)
+      }
+    }
+  })
+})
+
+describe('a product supplying its own colours', () => {
+  // The palette a real product handed over. Its blue misses 4.5:1 against white by
+  // a hair, its red misses it outright, and nobody had noticed either.
+  const brand = { primary: '#2f6bff', error: '#e5484d', background: '#f4f6f8', surface: '#ffffff' }
+
+  it('keeps every control readable, without the product having to know', () => {
+    for (const appearance of appearances) {
+      const theme = createTheme({ appearance, colorSource: 'brand', brand })
+
+      for (const variant of variants) {
+        const button = resolveButton(variant, 'medium', rest, theme)
+        const behind = button.backgroundColor === 'transparent' ? theme.colors.background : button.backgroundColor
+        expect(
+          contrastRatio(button.labelColor, behind),
+          `${appearance} / ${variant}`,
+        ).toBeGreaterThanOrEqual(contrastMinimum.normalText)
+      }
+    }
+  })
+
+  it('still uses the colours it was given everywhere they are safe', () => {
+    const theme = createTheme({ appearance: 'light', colorSource: 'brand', brand })
+    expect(theme.colors.primary).toBe(brand.primary)
+    expect(theme.colors.surface).toBe(brand.surface)
+  })
+
+  it('keeps what it was not told about', () => {
+    const theme = createTheme({ appearance: 'light', colorSource: 'brand', brand })
+    const shipped = createTheme({ appearance: 'light', colorSource: 'brand' })
+    expect(theme.colors.success).toBe(shipped.colors.success)
+  })
 })

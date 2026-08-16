@@ -47,3 +47,48 @@ export function meetsContrast(
 ): boolean {
   return contrastRatio(foreground, background) >= minimum
 }
+
+function toRgb(color: string): [number, number, number] {
+  const hex = color.replace('#', '').slice(0, 6)
+  return [0, 2, 4].map((i) => Number.parseInt(hex.slice(i, i + 2), 16)) as [number, number, number]
+}
+
+function toHex(rgb: [number, number, number]): string {
+  return `#${rgb.map((value) => Math.round(value).toString(16).padStart(2, '0')).join('')}`
+}
+
+function mix(from: [number, number, number], to: number, amount: number): [number, number, number] {
+  return from.map((value) => value + (to - value) * amount) as [number, number, number]
+}
+
+/**
+ * Move a colour just far enough that text on it can be read.
+ *
+ * A brand hands over the colour it wants, not the colour that happens to clear
+ * 4.5:1 — and the two are usually not the same. Rather than refusing the brand or
+ * ignoring the reader, this walks the colour away from the text until the pair
+ * passes, keeping as much of the original as the threshold allows.
+ *
+ * Direction follows the text: light text pushes the surface toward black, dark
+ * text pushes it toward white. Hue is left alone, so the result still reads as the
+ * colour it started from.
+ */
+export function ensureContrast(
+  color: string,
+  against: string,
+  minimum: number = contrastMinimum.normalText,
+): string {
+  if (contrastRatio(color, against) >= minimum) return color
+
+  const target = luminance(against) > 0.5 ? 0 : 255
+  const start = toRgb(color)
+
+  for (let step = 1; step <= 40; step += 1) {
+    const candidate = toHex(mix(start, target, step / 40))
+    if (contrastRatio(candidate, against) >= minimum) return candidate
+  }
+
+  // Nothing in that direction was enough — which only happens when the two are
+  // near the same lightness. Black or white always clears any real threshold.
+  return target === 0 ? '#000000' : '#ffffff'
+}
