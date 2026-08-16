@@ -54,6 +54,26 @@ function palette(variant: ButtonVariant, theme: Theme) {
 }
 
 /**
+ * What a button that cannot be pressed looks like.
+ *
+ * Not the same colours faded. Fading a brand colour reads as "loading", keeps
+ * promising the action is about to happen, and takes the label below the contrast
+ * a reader needs — a disabled control still has to be legible, because knowing
+ * *which* control is unavailable is the point of showing it at all.
+ *
+ * Stepping down to the neutral pair says "not now" without saying "wait", and the
+ * pair is one the theme already guarantees is readable.
+ */
+function unavailable(variant: ButtonVariant, theme: Theme) {
+  const { colors } = theme
+  return {
+    backgroundColor: variant === 'ghost' ? 'transparent' : colors.surfaceVariant,
+    labelColor: colors.onSurfaceVariant,
+    borderColor: variant === 'ghost' ? colors.outline : undefined,
+  }
+}
+
+/**
  * Pure, so every combination of variant, size and state can be rendered in a
  * browser and checked without a device.
  *
@@ -73,10 +93,14 @@ export function resolveButton(
    */
   radius: RadiusKey = 'full',
 ): ResolvedButton {
-  const { backgroundColor, labelColor, borderColor } = palette(variant, theme)
+  const { backgroundColor, labelColor, borderColor } = state.disabled
+    ? unavailable(variant, theme)
+    : palette(variant, theme)
   const metrics = sizing[size]
 
-  const opacity = state.disabled ? 0.38 : state.pressed ? 0.72 : 1
+  // 押されていないものが押されて見えることはない。無効は色で伝えるので、
+  // ここで更に薄くしない。
+  const opacity = state.disabled ? 1 : state.pressed ? 0.72 : 1
 
   return { backgroundColor, labelColor, borderColor, borderRadius: theme.radius[radius], ...metrics, opacity }
 }

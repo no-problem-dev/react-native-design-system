@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
+import { contrastRatio } from '../../../a11y/contrast.js'
 import { createTheme } from '../../../theme/createTheme.js'
 import type { ButtonSize, ButtonVariant } from '../resolveButton.js'
 import { resolveButton } from '../resolveButton.js'
@@ -59,18 +60,18 @@ describe('button metrics', () => {
 })
 
 describe('button states', () => {
-  it('dims while pressed and dims further when disabled', () => {
+  it('dims while pressed', () => {
     const base = resolveButton('primary', 'medium', rest, light).opacity
     const pressed = resolveButton('primary', 'medium', { pressed: true, disabled: false }, light).opacity
-    const disabled = resolveButton('primary', 'medium', { pressed: false, disabled: true }, light).opacity
     expect(base).toBeGreaterThan(pressed)
-    expect(pressed).toBeGreaterThan(disabled)
   })
 
-  it('reads as disabled even while it is being pressed', () => {
+  it('does not look pressed while it is disabled', () => {
+    // A button that cannot be pressed must not report being pressed, whatever the
+    // platform hands the component.
     const both = resolveButton('primary', 'medium', { pressed: true, disabled: true }, light)
     const disabled = resolveButton('primary', 'medium', { pressed: false, disabled: true }, light)
-    expect(both.opacity).toBe(disabled.opacity)
+    expect(both).toEqual(disabled)
   })
 
   it('covers every variant and size without throwing', () => {
@@ -98,5 +99,38 @@ describe('the shape a product asks for', () => {
     const square = resolveButton('danger', 'large', rest, dark, 'none')
     expect(square.backgroundColor).toBe(round.backgroundColor)
     expect(square.labelColor).toBe(round.labelColor)
+  })
+})
+
+describe('a button that cannot be pressed', () => {
+  const off = { pressed: false, disabled: true }
+
+  it('steps down to a neutral pair rather than fading the brand colour', () => {
+    // A faded brand colour reads as "loading" — it keeps promising the action is
+    // about to happen.
+    for (const theme of [light, dark]) {
+      const disabled = resolveButton('primary', 'medium', off, theme)
+      expect(disabled.backgroundColor).toBe(theme.colors.surfaceVariant)
+      expect(disabled.backgroundColor).not.toBe(theme.control.primaryFill)
+    }
+  })
+
+  it('stays readable, because which control is unavailable is the point', () => {
+    for (const theme of [light, dark]) {
+      for (const variant of variants) {
+        const disabled = resolveButton(variant, 'medium', off, theme)
+        const behind = disabled.backgroundColor === 'transparent'
+          ? theme.colors.surface
+          : disabled.backgroundColor
+        expect({ variant, ok: contrastRatio(disabled.labelColor, behind) >= 4.5 }).toEqual({
+          variant,
+          ok: true,
+        })
+      }
+    }
+  })
+
+  it('is not additionally dimmed — the colours already carry it', () => {
+    expect(resolveButton('primary', 'medium', off, light).opacity).toBe(1)
   })
 })
