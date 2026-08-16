@@ -59,7 +59,11 @@ function Segmented({ options, value, onChange, style }: PlatformSegmentedProps) 
             enabled={option.disabled !== true}
             onClick={() => onChange(option.value)}
           >
-            <Text>{option.label}</Text>
+            {/* The label goes in its own slot. A bare child is accepted and then
+                never drawn, which reads on a device as four empty outlines. */}
+            <SegmentedButton.Label>
+              <Text>{option.label}</Text>
+            </SegmentedButton.Label>
           </SegmentedButton>
         ))}
       </SingleChoiceSegmentedButtonRow>
