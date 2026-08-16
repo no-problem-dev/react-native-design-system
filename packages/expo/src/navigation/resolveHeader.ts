@@ -12,8 +12,7 @@ type Palette = { colors: ColorScheme }
  * colours would be overriding a decision that was made correctly.
  */
 export type ResolvedHeader = {
-  /** Undefined where the platform draws a material behind the bar. */
-  backgroundColor: string | undefined
+  backgroundColor: string
   /** The back control and any action items. */
   tintColor: string
   titleColor: string
@@ -22,25 +21,25 @@ export type ResolvedHeader = {
 /**
  * Decide how the header should be dressed.
  *
- * The split is the same one the tab bar has, for the same reason: iOS draws its
- * own material and a background colour replaces it; Android expects the app to
- * supply the surface its top app bar sits on.
+ * Both platforms are told the background. This was not the first answer: the bar
+ * has a system material of its own, and letting it draw that seemed obviously
+ * right. It is wrong here, and the way it is wrong is worth recording — a native
+ * stack header left without a background keeps the *light* one in the dark
+ * appearance, so the bar stays white while everything under it turns dark, and
+ * the title, coloured for the theme, disappears into it.
+ *
+ * The blur is what is lost, and it is a real loss. Getting it back means floating
+ * the bar over the content, which every screen then has to handle insets for — a
+ * larger and more easily broken change than an opaque bar in the right colour.
+ * The tab bar is untouched by this and keeps its material.
+ *
+ * What differs by platform is only which colour leads the controls: iOS tints its
+ * bar buttons with the accent, Android draws them in the on-surface colour.
  */
 export function resolveHeader(theme: Palette, platform: 'ios' | 'android' | 'other'): ResolvedHeader {
-  if (platform === 'ios') {
-    // Nothing but colours. The bar's own background is already the system
-    // material — naming a blur, or floating the bar over the content, replaces a
-    // correct default with one every screen then has to handle insets for.
-    return {
-      backgroundColor: undefined,
-      tintColor: theme.colors.primary,
-      titleColor: theme.colors.onSurface,
-    }
-  }
-
   return {
     backgroundColor: theme.colors.surface,
-    tintColor: theme.colors.onSurface,
+    tintColor: platform === 'ios' ? theme.colors.primary : theme.colors.onSurface,
     titleColor: theme.colors.onSurface,
   }
 }

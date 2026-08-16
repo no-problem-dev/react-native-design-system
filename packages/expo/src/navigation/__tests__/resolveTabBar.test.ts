@@ -71,17 +71,19 @@ describe('the icon vocabulary', () => {
 })
 
 describe('dressing the platform header', () => {
-  it('leaves the bar itself entirely to the platform that draws its own', () => {
-    // Its background is already the system material. Naming a blur or floating it
-    // over the content swaps a correct default for one every screen has to work
-    // around, which is the opposite of adopting the platform.
-    const header = resolveHeader(theme, 'ios')
-    expect(header.backgroundColor).toBeUndefined()
+  it('supplies the background on both platforms', () => {
+    // Left without one, a native stack header keeps the light background in the
+    // dark appearance: the bar stays white while the page under it turns dark,
+    // and the title — coloured for the theme — disappears into it.
+    for (const platform of ['ios', 'android'] as const) {
+      expect(resolveHeader(theme, platform).backgroundColor).toBe(theme.colors.surface)
+    }
   })
 
-  it('supplies the surface on the platform that expects it', () => {
-    const header = resolveHeader(theme, 'android')
-    expect(header.backgroundColor).toBe(theme.colors.surface)
+  it('follows the appearance, which is the whole reason it names a colour', () => {
+    const dark = { colors: scheme.dark }
+    expect(resolveHeader(dark, 'ios').backgroundColor).toBe(scheme.dark.surface)
+    expect(resolveHeader(dark, 'ios').backgroundColor).not.toBe(scheme.light.surface)
   })
 
   it('says nothing about where the title goes or how the back control looks', () => {
