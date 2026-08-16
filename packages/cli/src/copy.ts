@@ -40,9 +40,15 @@ function exportable(items: Item[]): string[] {
  * The adapter and the navigation chrome are left out on purpose. Both import from
  * the entry point, and exporting them back would close a loop between them — one
  * that works until the day a bundler evaluates the modules in the other order.
+ *
+ * Anything that is not TypeScript is left out too. The entry point speaks for what
+ * the app imports, and a file the build tools read — the token data, the generator a
+ * Tailwind config calls — is not part of that graph. Re-exporting one only asks
+ * TypeScript for types it was never going to have.
  */
 function isExportable(path: string): boolean {
-  if (path.endsWith('index.ts') || path.endsWith('.json')) return false
+  if (path.endsWith('index.ts')) return false
+  if (!/\.tsx?$/.test(path)) return false
   return !path.startsWith('adapter/') && !path.startsWith('navigation/')
 }
 

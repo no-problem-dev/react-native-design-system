@@ -97,6 +97,15 @@ describe('what actually gets produced', () => {
     expect(paths).toContain('index.ts')
   })
 
+  it('the entry point speaks only for what the app imports', () => {
+    // The token data and the generator a Tailwind config calls are read by build
+    // tools, not by the app. Re-exporting one asks TypeScript for types it has none of.
+    const index = files.find((file) => file.path === 'index.ts')?.content ?? ''
+    for (const line of index.split('\n').filter((l) => l.startsWith('export'))) {
+      expect(line, line).not.toMatch(/\.(json|cjs|mjs|css)'/)
+    }
+  })
+
   it('leaves nothing pointing at a package the destination will not have', () => {
     for (const file of files) {
       expect(file.content, file.path).not.toContain(`'@no-problem/design-tokens'`)
