@@ -1,0 +1,112 @@
+{
+  "spacing": {
+    "none": {
+      "$value": "{space.0}",
+      "$type": "dimension"
+    },
+    "xxs": {
+      "$value": "{space.2}",
+      "$type": "dimension"
+    },
+    "xs": {
+      "$value": "{space.4}",
+      "$type": "dimension"
+    },
+    "sm": {
+      "$value": "{space.8}",
+      "$type": "dimension"
+    },
+    "md": {
+      "$value": "{space.12}",
+      "$type": "dimension"
+    },
+    "lg": {
+      "$value": "{space.16}",
+      "$type": "dimension"
+    },
+    "xl": {
+      "$value": "{space.24}",
+      "$type": "dimension"
+    },
+    "xxl": {
+      "$value": "{space.32}",
+      "$type": "dimension"
+    },
+    "xxxl": {
+      "$value": "{space.48}",
+      "$type": "dimension"
+    },
+    "xxxxl": {
+      "$value": "{space.64}",
+      "$type": "dimension"
+    }
+  },
+  "radius": {
+    "none": {
+      "$value": "{radiusStep.0}",
+      "$type": "dimension"
+    },
+    "xs": {
+      "$value": "{radiusStep.2}",
+      "$type": "dimension"
+    },
+    "sm": {
+      "$value": "{radiusStep.4}",
+      "$type": "dimension"
+    },
+    "md": {
+      "$value": "{radiusStep.8}",
+      "$type": "dimension"
+    },
+    "lg": {
+      "$value": "{radiusStep.12}",
+      "$type": "dimension"
+    },
+    "xl": {
+      "$value": "{radiusStep.16}",
+      "$type": "dimension"
+    },
+    "xxl": {
+      "$value": "{radiusStep.20}",
+      "$type": "dimension"
+    },
+    "card": {
+      "$value": "{radiusStep.24}",
+      "$type": "dimension"
+    },
+    "full": {
+      "$value": "{radiusStep.full}",
+      "$type": "dimension"
+    }
+  },
+  "iconSize": {
+    "xxs": {
+      "$value": "{space.8}",
+      "$type": "dimension"
+    },
+    "xs": {
+      "$value": "{space.12}",
+      "$type": "dimension"
+    },
+    "sm": {
+      "$value": "{space.16}",
+      "$type": "dimension"
+    },
+    "md": {
+      "$value": "{space.24}",
+      "$type": "dimension"
+    },
+    "lg": {
+      "$value": "{space.32}",
+      "$type": "dimension"
+    },
+    "xl": {
+      "$value": "{space.48}",
+      "$type": "dimension"
+    },
+    "xxl": {
+      "$value": "{space.64}",
+      "$type": "dimension"
+    }
+  }
+}

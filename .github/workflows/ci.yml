@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # Runs first, and on its own: if something private reached this repository
+      # the build result does not matter, and every later step only adds noise
+      # between the failure and the person reading the log.
+      - name: Purity
+        run: pnpm purity
+
+      - run: pnpm build
+      - run: pnpm typecheck
+      - run: pnpm test
+
+      # What a consumer actually receives: the file list, the exports map, and
+      # whether types resolve. These break silently — nothing in the repository
+      # fails when a published entry point points at a file that was never built.
+      - name: Packaging
+        run: pnpm check:packaging

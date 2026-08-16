@@ -1,0 +1,22 @@
+{
+  "name": "react-native-design-system",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "pnpm -r --filter \"./packages/**\" run build",
+    "typecheck": "pnpm -r run typecheck",
+    "test": "pnpm -r run test",
+    "purity": "node scripts/check-purity.mjs",
+    "verify": "pnpm purity && pnpm build && pnpm typecheck && pnpm test && pnpm check:packaging",
+    "check:packaging": "pnpm -r --filter \"./packages/**\" exec publint && pnpm -r --filter \"./packages/**\" exec attw --pack . --profile esm-only --exclude-entrypoints css"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
+    "publint": "^0.3.23",
+    "typescript": "^5.9.0"
+  }
+}
