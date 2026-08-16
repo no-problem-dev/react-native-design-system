@@ -4,7 +4,12 @@ import type { ReactNode } from 'react'
 import { useMemo } from 'react'
 import { useColorScheme } from 'react-native'
 
-import { bindings } from './platform.js'
+// Deliberately without a file extension. This is the one import in the repository
+// that must resolve to a different file per platform, and the bundler only offers
+// `platform.ios` / `platform.android` / `platform` as candidates when it is asked
+// for a module rather than for a named file.
+// eslint-disable-next-line import/extensions
+import { bindings } from './platform'
 
 export type DesignSystemProviderProps = {
   children: ReactNode

@@ -1,0 +1,17 @@
+{
+  "expo": {
+    "name": "Design System Example",
+    "slug": "design-system-example",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "bundleIdentifier": "dev.noproblem.designsystem.example",
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "dev.noproblem.designsystem.example"
+    }
+  }
+}

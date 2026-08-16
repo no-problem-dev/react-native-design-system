@@ -1,0 +1,27 @@
+{
+  "name": "example",
+  "version": "0.0.0",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "start": "expo start",
+    "ios": "expo start --ios",
+    "android": "expo start --android",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@expo/ui": "^57.0.7",
+    "@no-problem/design-system": "workspace:*",
+    "@no-problem/design-system-expo": "workspace:*",
+    "@no-problem/design-tokens": "workspace:*",
+    "expo": "^57.0.7",
+    "expo-glass-effect": "^57.0.1",
+    "expo-status-bar": "^57.0.1",
+    "react": "^19.2.0",
+    "react-native": "^0.86.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "typescript": "^5.9.0"
+  }
+}

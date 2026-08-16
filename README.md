@@ -159,6 +159,22 @@ Every rendering path is reachable without a device. What is left for a real one 
 capability detection and platform fidelity — a handful of screenshots rather than a
 whole suite.
 
+`apps/example` is that handful. It prints what the device answered and then draws
+every surface and button below it, so one screenshot settles both questions at once.
+
+### What the device said that the browser could not
+
+Running it on iOS 27 confirmed the ladder — glass available, interactive, renderer
+supplied — and surfaced something no browser would have shown:
+
+**A glass surface over a plain background is almost invisible.** The material works by
+refracting what sits behind it, and a flat page gives it nothing to refract, so
+`raised`, `floating` and `overlay` come out nearly the same tone as the page and the
+sense of height disappears. Only `flat`, which is a fill by definition, reads clearly.
+
+That is a design question rather than a defect: the material is meant to sit over
+content. It is open, and listed below.
+
 Contrast is checked twice: by the accessibility rules in the browser, which is the
 honest check, and by a unit test over every appearance, variant and size, which runs
 in milliseconds and names the exact pair that broke.
@@ -167,6 +183,15 @@ in milliseconds and names the exact pair that broke.
 pnpm --filter catalog dev     # open the catalog
 pnpm --filter catalog test    # run the stories as tests
 ```
+
+## Open questions
+
+**How a glass surface should behave over a plain background.** The material needs
+content behind it to read as a material at all. Three ways out, none obviously right:
+keep a hairline border and a shadow under the glass so height survives either way;
+fall back to a fill when there is nothing behind; or say that glass is only for
+surfaces that overlay content and leave the rest as fills. The last is closest to what
+the platform intends and the furthest from "one component, every situation".
 
 ## Development
 
