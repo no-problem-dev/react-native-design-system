@@ -65,3 +65,27 @@ export const DisabledDoesNotFire: Story = {
     await expect(args.onPress).not.toHaveBeenCalled()
   },
 }
+
+/**
+ * The parts a product owns.
+ *
+ * A design system that fixes the shape and the typeface leaves a product no way to
+ * look like itself except to override the component from outside — at which point
+ * the component is decoration. The colours stay here, because those are what keeps
+ * a label readable on its fill.
+ */
+export const ShapedByTheProduct: Story = {
+  render: () => (
+    <View style={{ gap: 12 }}>
+      <Button radius="md" labelStyle={{ fontWeight: '800', letterSpacing: 1 }}>
+        Squared off
+      </Button>
+      <Button variant="secondary" radius="none">
+        No radius at all
+      </Button>
+      <Button variant="ghost" radius="lg">
+        Ghost, softly rounded
+      </Button>
+    </View>
+  ),
+}

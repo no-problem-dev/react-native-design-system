@@ -1,3 +1,5 @@
+import type { RadiusKey } from '@no-problem/design-tokens'
+
 import type { Theme } from '../../theme/types.js'
 
 /** What the button is for, not what colour it is. */
@@ -13,6 +15,7 @@ export type ResolvedButton = {
   backgroundColor: string
   labelColor: string
   borderColor: string | undefined
+  borderRadius: number
   paddingVertical: number
   paddingHorizontal: number
   fontSize: number
@@ -62,11 +65,18 @@ export function resolveButton(
   size: ButtonSize,
   state: ButtonState,
   theme: Theme,
+  /**
+   * How round. A capsule is what both platforms draw by default, so that is the
+   * default here — but the shape of a button is part of what a product looks like,
+   * and a design system that fixes it leaves the product no way to be itself
+   * except to override the component from outside.
+   */
+  radius: RadiusKey = 'full',
 ): ResolvedButton {
   const { backgroundColor, labelColor, borderColor } = palette(variant, theme)
   const metrics = sizing[size]
 
   const opacity = state.disabled ? 0.38 : state.pressed ? 0.72 : 1
 
-  return { backgroundColor, labelColor, borderColor, ...metrics, opacity }
+  return { backgroundColor, labelColor, borderColor, borderRadius: theme.radius[radius], ...metrics, opacity }
 }

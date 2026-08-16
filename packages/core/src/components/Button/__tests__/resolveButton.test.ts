@@ -81,3 +81,22 @@ describe('button states', () => {
     }
   })
 })
+
+describe('the shape a product asks for', () => {
+  it('is a capsule when nothing is asked, which is what both platforms draw', () => {
+    expect(resolveButton('primary', 'medium', rest, light).borderRadius).toBe(light.radius.full)
+  })
+
+  it('takes the step it was given, from the theme rather than from a number', () => {
+    // A product that hardcoded the value here would stop following its own scale
+    // the moment that scale moved.
+    expect(resolveButton('primary', 'medium', rest, light, 'md').borderRadius).toBe(light.radius.md)
+  })
+
+  it('does not let the shape change what the label sits on', () => {
+    const round = resolveButton('danger', 'large', rest, dark, 'full')
+    const square = resolveButton('danger', 'large', rest, dark, 'none')
+    expect(square.backgroundColor).toBe(round.backgroundColor)
+    expect(square.labelColor).toBe(round.labelColor)
+  })
+})

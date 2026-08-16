@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react'
 import { useState } from 'react'
-import type { StyleProp, ViewStyle } from 'react-native'
+import type { StyleProp, TextStyle, ViewStyle } from 'react-native'
+
+import type { RadiusKey } from '@no-problem/design-tokens'
 
 import { useTheme } from '../../theme/ThemeProvider.js'
 import { ButtonCore } from './ButtonCore.js'
@@ -14,6 +16,10 @@ export type ButtonProps = {
   disabled?: boolean | undefined
   accessibilityLabel?: string | undefined
   style?: StyleProp<ViewStyle> | undefined
+  /** How round. Defaults to a capsule, which is what both platforms draw. */
+  radius?: RadiusKey | undefined
+  /** The label's typeface. Its size and colour stay with the design system. */
+  labelStyle?: StyleProp<TextStyle> | undefined
   children: ReactNode
 }
 
@@ -24,11 +30,13 @@ export function Button({
   disabled = false,
   accessibilityLabel,
   style,
+  radius,
+  labelStyle,
   children,
 }: ButtonProps) {
   const theme = useTheme()
   const [pressed, setPressed] = useState(false)
-  const appearance = resolveButton(variant, size, { pressed, disabled }, theme)
+  const appearance = resolveButton(variant, size, { pressed, disabled }, theme, radius)
 
   return (
     <ButtonCore
@@ -39,6 +47,7 @@ export function Button({
       disabled={disabled}
       accessibilityLabel={accessibilityLabel}
       style={style}
+      labelStyle={labelStyle}
     >
       {children}
     </ButtonCore>
