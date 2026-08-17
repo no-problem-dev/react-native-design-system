@@ -1,16 +1,18 @@
 import { mkdtempSync, readFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { dirname, join as joinPosix, normalize } from 'node:path/posix'
 import { describe, expect, it } from 'vitest'
 
 import { prepare, write } from '../copy.js'
+import type { FileSpec, Origin } from '../manifest.js'
 import { manifest } from '../manifest.js'
 import { provenance, resolveItems, rewriteImports } from '../transform.js'
 
 describe('working out what to copy', () => {
   it('brings whatever an item needs', () => {
     const names = resolveItems(['surface']).map((item) => item.name)
-    expect(names).toEqual(['tokens', 'theme', 'material', 'surface'])
+    expect(names).toEqual(['tokens', 'a11y', 'theme', 'material', 'surface'])
   })
 
   it('writes a dependency before the thing that needs it', () => {
@@ -39,40 +41,91 @@ describe('working out what to copy', () => {
 })
 
 describe('pointing a copied file at its neighbours', () => {
+  const at = (origin: Origin, from: string, to = from): FileSpec => ({ origin, from, to })
+
   it('replaces the package import with a path back to the copied tokens', () => {
-    expect(rewriteImports(`import { spacing } from '@no-problem/design-tokens'`, 'theme/types.ts')).toBe(
-      `import { spacing } from '../tokens'`,
-    )
+    expect(
+      rewriteImports(`import { spacing } from '@no-problem/design-tokens'`, at('core', 'theme/types.ts')),
+    ).toBe(`import { spacing } from '../tokens'`)
   })
 
   it('counts the depth of where the file lands', () => {
-    expect(rewriteImports(`from '@no-problem/design-tokens'`, 'components/Surface/Surface.tsx')).toBe(
-      `from '../../tokens'`,
+    expect(
+      rewriteImports(`from '@no-problem/design-tokens'`, at('core', 'components/Surface/Surface.tsx')),
+    ).toBe(`from '../../tokens'`)
+    expect(rewriteImports(`from '@no-problem/design-tokens'`, at('tokens', 'index.ts'))).toBe(
+      `from './tokens'`,
     )
-    expect(rewriteImports(`from '@no-problem/design-tokens'`, 'index.ts')).toBe(`from './tokens'`)
   })
 
   it('flattens the generated file away, since the copy has no build step', () => {
-    expect(rewriteImports(`export { spacing } from './generated/tokens.js'`, 'tokens/index.ts')).toBe(
-      `export { spacing } from './tokens'`,
-    )
+    expect(
+      rewriteImports(`export { spacing } from './generated/tokens.js'`, at('tokens', 'index.ts', 'tokens/index.ts')),
+    ).toBe(`export { spacing } from './tokens'`)
   })
 
   it('drops the extension from relative imports, which a copy has no build step to resolve', () => {
-    expect(rewriteImports(`import { useTheme } from '../../theme/ThemeProvider.js'`, 'a/b/c.tsx')).toBe(
-      `import { useTheme } from '../../theme/ThemeProvider'`,
-    )
+    expect(
+      rewriteImports(`import { useTheme } from '../../theme/ThemeProvider.js'`, at('core', 'a/b/c.tsx')),
+    ).toBe(`import { useTheme } from '../../theme/ThemeProvider'`)
   })
 
   it('leaves the extensionless platform import alone', () => {
     const line = `import { bindings } from './platform'`
-    expect(rewriteImports(line, 'adapter/DesignSystemProvider.tsx')).toBe(line)
+    expect(rewriteImports(line, at('expo', 'DesignSystemProvider.tsx', 'adapter/DesignSystemProvider.tsx'))).toBe(line)
+  })
+
+  // The destination layout is not the source layout. This file moves one directory
+  // deeper while the platform module moves into `adapter/`, so the path that was
+  // right in `src` names nothing at all in the copy.
+  it('re-points an import across a change of layout', () => {
+    expect(
+      rewriteImports(
+        `import { bindings } from '../platform'`,
+        at('expo', 'components/Segmented.tsx', 'components/Segmented/Segmented.tsx'),
+      ),
+    ).toBe(`import { bindings } from '../../adapter/platform'`)
+  })
+
+  it('leaves a specifier the manifest does not know pointing where it pointed', () => {
+    expect(rewriteImports(`import x from './nowhere.js'`, at('core', 'theme/types.ts'))).toBe(
+      `import x from './nowhere'`,
+    )
   })
 
   it('rewrites every occurrence, not just the first', () => {
     const source = `import a from '@no-problem/design-tokens'\nimport type b from '@no-problem/design-tokens'`
-    expect(rewriteImports(source, 'a/b.ts')).not.toContain('@no-problem/design-tokens')
+    expect(rewriteImports(source, at('core', 'a/b.ts'))).not.toContain('@no-problem/design-tokens')
   })
+})
+
+/**
+ * Asking for one item has to produce something that compiles on its own. Whether it
+ * does comes down to two things being right at once — the manifest saying what an
+ * item needs, and the rewrite finding where each file went — and neither is visible
+ * from reading either one. So it is checked against the files themselves, per item,
+ * because a set that happens to be complete together says nothing about the parts.
+ */
+describe('a copy standing on its own', () => {
+  const RELATIVE = /(?:\bfrom\s*|\bimport\s*|\brequire\(\s*)(['"])(\.{1,2}\/[^'"]*)\1/g
+  const withoutExtension = (path: string) => path.replace(/\.(tsx?|jsx?)$/, '')
+
+  for (const name of Object.keys(manifest)) {
+    it(`copying ${name} alone leaves no import pointing at a file it did not bring`, () => {
+      const files = prepare([name], '1.2.3')
+      const present = new Set(files.map((file) => withoutExtension(file.path)))
+
+      for (const file of files) {
+        for (const match of file.content.matchAll(RELATIVE)) {
+          const target = withoutExtension(normalize(joinPosix(dirname(file.path), match[2]!)))
+          // A directory resolves through its entry point, which is how the copied
+          // tokens are reached.
+          const found = present.has(target) || present.has(`${target}/index`)
+          expect(found, `${file.path} → ${match[2]}`).toBe(true)
+        }
+      }
+    })
+  }
 })
 
 describe('the note left on a copied file', () => {
