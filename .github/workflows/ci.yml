@@ -32,9 +32,13 @@ jobs:
       # Copying is a supported way to consume this, so it has to keep working: eject
       # into a real app and typecheck there. A rewritten import that points nowhere
       # would otherwise only show up in someone else's repository.
+      #
+      # --all rather than a list of items: a list here would have to be edited every
+      # time the manifest grows, and the failure mode of forgetting is a new item
+      # that is never checked at all.
       - name: Copy check
         run: |
-          node packages/cli/dist/main.js add surface button a11y expo-adapter --dest apps/example/src/_copycheck
+          node packages/cli/dist/main.js add --all --dest apps/example/src/_copycheck
           pnpm --filter example typecheck
           rm -rf apps/example/src/_copycheck
 

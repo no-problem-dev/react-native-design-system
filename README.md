@@ -248,10 +248,14 @@ pnpm --filter catalog test    # run the stories as tests
 ## Development
 
 ```sh
-pnpm install
+pnpm install    # also points git at .githooks
 pnpm --filter catalog exec playwright install chromium
 pnpm verify     # purity, build, typecheck, test, packaging
 ```
+
+`pnpm install` installs a pre-commit hook that runs the purity check. It also runs in
+CI, but CI runs after a push, and the thing it looks for cannot be taken back once it
+has reached a public remote.
 
 ## Licence
 
