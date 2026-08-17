@@ -36,7 +36,8 @@
     "expo-router": "*",
     "expo-system-ui": "*",
     "react": ">=18",
-    "react-native": ">=0.74"
+    "react-native": ">=0.74",
+    "sf-symbols-typescript": "*"
   },
   "devDependencies": {
     "@expo/ui": "^57.0.7",
