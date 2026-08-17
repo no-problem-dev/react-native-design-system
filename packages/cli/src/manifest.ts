@@ -25,6 +25,23 @@ export type Item = {
   files: FileSpec[]
 }
 
+/**
+ * Where every source file lands, keyed by the package it comes from and its path
+ * inside that package's `src`.
+ *
+ * The destination layout is not the source layout — the platform package's files are
+ * grouped under `adapter/`, and its Segmented sits beside the core one — so a
+ * relative import written in `src` can name nothing at all once copied. This is what
+ * lets those imports be re-pointed instead of the two layouts having to agree.
+ */
+export function layout(): Map<string, string> {
+  const map = new Map<string, string>()
+  for (const item of Object.values(manifest)) {
+    for (const spec of item.files) map.set(`${spec.origin}:${spec.from}`, spec.to)
+  }
+  return map
+}
+
 const tokenFiles: FileSpec[] = [
   // The values as data, so a build tool that is not TypeScript can read the same
   // file rather than keep its own copy.
@@ -50,7 +67,9 @@ export const manifest: Record<string, Item> = {
   theme: {
     name: 'theme',
     description: 'The theme, its provider, and the three ways colours can be sourced.',
-    needs: ['tokens'],
+    // Building a theme forces its colours to a readable contrast, so the rules for
+    // measuring that come with it rather than being something to remember.
+    needs: ['tokens', 'a11y'],
     files: [
       { origin: 'core', from: 'theme/types.ts', to: 'theme/types.ts' },
       { origin: 'core', from: 'theme/createTheme.ts', to: 'theme/createTheme.ts' },
@@ -121,7 +140,9 @@ export const manifest: Record<string, Item> = {
   segmented: {
     name: 'segmented',
     description: 'Choosing between views of the same thing, with each platform’s own control.',
-    needs: ['theme'],
+    // The platform-backed one reads its control out of the adapter's bindings, so
+    // copying this without the adapter leaves an import with nothing on the end of it.
+    needs: ['theme', 'expo-adapter'],
     files: [
       { origin: 'core', from: 'components/Segmented/resolveSegmented.ts', to: 'components/Segmented/resolveSegmented.ts' },
       { origin: 'core', from: 'components/Segmented/SegmentedCore.tsx', to: 'components/Segmented/SegmentedCore.tsx' },
@@ -132,7 +153,9 @@ export const manifest: Record<string, Item> = {
   button: {
     name: 'button',
     description: 'A button whose colours come from the control layer, so its label stays readable.',
-    needs: ['theme'],
+    // A raised button carries the shadow that matches its height, which is the
+    // material layer's answer rather than the theme's.
+    needs: ['material'],
     files: [
       { origin: 'core', from: 'components/Button/resolveButton.ts', to: 'components/Button/resolveButton.ts' },
       { origin: 'core', from: 'components/Button/ButtonCore.tsx', to: 'components/Button/ButtonCore.tsx' },

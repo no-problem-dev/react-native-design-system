@@ -2,6 +2,7 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 
 import type { FileSpec, Item } from './manifest.js'
+import { layout } from './manifest.js'
 import { readSource, versionOfDesignSystem } from './sources.js'
 import { provenance, resolveItems, rewriteImports } from './transform.js'
 
@@ -16,6 +17,9 @@ export type PreparedFile = {
 export function prepare(names: string[], version = versionOfDesignSystem()): PreparedFile[] {
   const items = resolveItems(names)
   const header = provenance(version)
+  // Where every file lands, not only the ones this call asked for: a relative import
+  // has to be re-pointed the same way whatever else was requested alongside it.
+  const where = layout()
 
   const files = items.flatMap((item: Item) =>
     item.files.map((spec) => ({
@@ -24,7 +28,7 @@ export function prepare(names: string[], version = versionOfDesignSystem()): Pre
       // make it invalid.
       content: spec.to.endsWith('.json')
         ? readSource(spec)
-        : header + rewriteImports(readSource(spec), spec.to),
+        : header + rewriteImports(readSource(spec), spec, where),
     })),
   )
 

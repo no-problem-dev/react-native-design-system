@@ -1,0 +1,7 @@
+#!/bin/sh
+# The purity check also runs in CI, but CI runs after a push — and the script's own
+# premise is that a leak which reached a public remote cannot be taken back. This is
+# the copy that runs while taking it back is still free.
+#
+# `git commit --no-verify` skips it. CI does not.
+exec node scripts/check-purity.mjs
